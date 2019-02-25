@@ -1,0 +1,10 @@
+{
+  "name": "text-recognizer",
+  "description": "",
+  "version": "0.1.0",
+  "dependencies": {},
+  "devDependencies": {
+    "serverless-python-requirements": "^4.1.1",
+    "serverless-wsgi": "~1.4.9"
+  }
+}

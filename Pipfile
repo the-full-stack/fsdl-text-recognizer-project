@@ -1,0 +1,33 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+boltons = "*"
+editdistance = "*"
+flask = "*"
+h5py = "*"
+numpy = "*"
+opencv-python-headless = "*"
+requests = "*"
+tensorflow-gpu = "*"
+
+[dev-packages]
+gpustat = "*"
+gradescope-utils = "*"
+grequests = "*" # admin
+jupyterlab = "*"
+matplotlib = "*"
+mypy = "*"
+nltk = "*"
+pycodestyle = "*"
+pylint = "*"
+pytest = "*"
+pyyaml = "*"
+redlock-py = "*"
+scipy = "*"
+wandb = "*"
+
+[requires]
+python_version = "3.6"

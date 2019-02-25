@@ -1,0 +1,43 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.6.5
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - cache-{{ checksum "Pipfile.lock" }}
+
+      - run:
+          name: install dependencies
+          command: |
+            sudo pip install --upgrade pip
+            sudo pip install pipenv
+            sed -i 's/tensorflow-gpu/tensorflow/' Pipfile
+            pipenv install --dev
+
+      - save_cache:
+          key: cache-{{ checksum "Pipfile.lock" }}
+          paths:
+            - ~/.local
+
+      - run:
+          name: run prediction tests
+          command: |
+            cd lab6 && PYTHONPATH=. pipenv run pytest -s text_recognizer/tests/*
+
+      - run:
+          name: run evaluation tests
+          command: |
+            cd lab6 && PYTHONPATH=. pipenv run pytest -s evaluation/*
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports

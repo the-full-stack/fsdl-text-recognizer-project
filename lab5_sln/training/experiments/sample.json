@@ -1,0 +1,35 @@
+{
+    "experiment_group": "Sample Experiments",
+    "experiments": [
+        {
+            "dataset": "EmnistDataset",
+            "model": "CharacterModel",
+            "network": "mlp",
+            "network_args": {
+                "num_layers": 2
+            },
+            "train_args": {
+                "batch_size": 256
+            }
+        },
+        {
+            "dataset": "EmnistDataset",
+            "model": "CharacterModel",
+            "network": "mlp",
+            "network_args": {
+                "num_layers": 4
+            },
+            "train_args": {
+                "batch_size": 256
+            }
+        },
+        {
+            "dataset": "EmnistDataset",
+            "model": "CharacterModel",
+            "network": "lenet",
+            "train_args": {
+                "batch_size": 128
+            }
+        }
+    ]
+}

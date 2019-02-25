@@ -1,0 +1,46 @@
+# Data
+data
+
+# Editors
+.vscode
+
+# Node
+node_modules
+
+# Python
+__pycache__
+.pytest_cache
+.ipynb_checkpoints
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Serverless directories
+.serverless
+.requirements.zip
+.requirements
+
+# W&B
+wandb-debug.log
+wandb
+
+# Misc
+.DS_Store
+_labs
+logs
+.mypy_cache
