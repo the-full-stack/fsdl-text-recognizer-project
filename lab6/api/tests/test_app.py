@@ -1,3 +1,4 @@
+"""Tests for web app."""
 import base64
 import pathlib
 from unittest import TestCase
@@ -6,8 +7,8 @@ from api.app import app
 
 
 REPO_DIRNAME = pathlib.Path(__file__).parents[2].resolve()
-# SUPPORT_DIRNAME = REPO_DIRNAME / 'text_recognizer' / 'tests'/ 'support' / 'iam_lines'
-SUPPORT_DIRNAME = REPO_DIRNAME / 'text_recognizer' / 'tests'/ 'support' / 'emnist_lines'
+# SUPPORT_DIRNAME = REPO_DIRNAME / 'text_recognizer' / 'tests' / 'support' / 'iam_lines'
+SUPPORT_DIRNAME = REPO_DIRNAME / 'text_recognizer' / 'tests' / 'support' / 'emnist_lines'
 
 
 class TestIntegrations(TestCase):
@@ -26,6 +27,6 @@ class TestIntegrations(TestCase):
             'image': f'data:image/jpeg;base64,{b64_image.decode()}'
         })
         json_data = response.get_json()
-        self.assertEquals(json_data['pred'], 'or if used the results')
-        # self.assertEquals(json_data['pred'], 'and came into the livingroom, where')
+        self.assertEqual(json_data['pred'], 'or if used the results')
+        # self.assertEqual(json_data['pred'], 'and came into the livingroom, where')
 

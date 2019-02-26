@@ -107,13 +107,12 @@ def construct_image_from_string(string: str, samples_by_char: dict, max_overlap:
     sampled_images = select_letter_samples_for_string(string, samples_by_char)
     N = len(sampled_images)
     H, W = sampled_images[0].shape
-    oW = int(overlap * W)
-    noW = W - oW
+    next_overlap_width = W - int(overlap * W)
     concatenated_image = np.zeros((H, W * N), np.uint8)
     x = 0
     for image in sampled_images:
         concatenated_image[:, x:(x + W)] += image
-        x += noW
+        x += next_overlap_width
     return np.minimum(255, concatenated_image)
 
 

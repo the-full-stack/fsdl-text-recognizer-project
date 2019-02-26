@@ -86,14 +86,14 @@ def _download_and_process_emnist(download_processed=True, sample_to_balance=Fals
     if download_processed:
         os.chdir(PROCESSED_DATA_DIRNAME)
         print('Downloading EMNIST (processed)...')
-        urlretrieve(PROCESSED_URL, 'byclass.h5')
+        urlretrieve(PROCESSED_URL, 'byclass.h5')  # nosec
         return
 
     os.chdir(RAW_DATA_DIRNAME)
 
     if not os.path.exists('matlab.zip'):
         print('Downloading EMNIST...')
-        urlretrieve(RAW_URL, 'matlab.zip')
+        urlretrieve(RAW_URL, 'matlab.zip')  # nosec
 
     print('Unzipping EMNIST and loading .mat file...')
     zip_file = zipfile.ZipFile('matlab.zip', 'r')

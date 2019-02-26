@@ -20,10 +20,12 @@ def create_emnist_lines_support_files():
     for ind in [0, 1, 3]:
         image = dataset.x_test[ind]
         print(image.sum(), image.dtype)
-        label = ''.join(dataset.mapping[label] for label in np.argmax(dataset.y_test[ind], axis=-1).flatten()).strip(' _')
+        label = ''.join(
+            dataset.mapping[label]
+            for label in np.argmax(dataset.y_test[ind], axis=-1).flatten()
+        ).strip(' _')
         print(label)
         util.write_image(image, str(SUPPORT_DIRNAME / f'{label}.png'))
-
 
 
 

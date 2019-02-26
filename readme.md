@@ -18,20 +18,22 @@ Welcome!
   - Lab 7 (30 min) data labeling
     - Go through data versioning and even have a little labeling interface for fresh data that they generated on the first day
 - Fourth session (75 min)
-  - Lab 8 (15 min) testing
-  - Lab 9 (60 min) deployment
+  - Lab 8 (75 min) testing & deployment
 
 ## Tasks for morning of 2019 Feb 25
 
 - [x] set up linting
+    - [x] make the lint.sh script complete even when some commands fail
 - [x] get rid of sliding-window cnn
 - [x] get rid of non-ctc lstm
 - [x] get to ~100% linted
-- [ ] add training tests
-- [ ] take some screenshots of looking at IAM dataset
+- [x] use git-lfs for models
+
+- [ ] train a baller IAMLines model and use that in app.py
+- [ ] add git-lfs to circleci config
+- [ ] add linting to lab circleci
+- [ ] add tests for training
 - [ ] add metadata.toml and download data in a separate script, not from dataset python file directly
 - [ ] add "subsample" mode to dataset
 - [ ] add to lab 5: output sample predictions every epoch so that they can be reviewed in weights and biases
 - [ ] go through the first 5 labs and make sure it all works
-- [ ] use git-lfs for models
-- [ ] sync with josh and give him latitude to make improvements, particularly in saving models

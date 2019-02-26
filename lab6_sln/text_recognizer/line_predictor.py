@@ -5,9 +5,6 @@ import numpy as np
 
 from text_recognizer.models import LineModelCtc
 from text_recognizer.datasets import EmnistLinesDataset
-# Hide lines below until Lab 5
-from text_recognizer.datasets import IamLinesDataset
-# Hide lines above until Lab 5
 import text_recognizer.util as util
 
 

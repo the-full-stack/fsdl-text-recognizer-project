@@ -12,7 +12,21 @@ In this lab, we will
 - Look at basic metrics and set up a more advanced one
 - Experience something going wrong in our deployed service, and catching it with metrics
 
-This lab has quite a few new files. We'll go through them in order.
+This lab has quite a few new files.
+We'll go through them in order.
+
+## Linting script
+
+Running `tasks/lint.sh` fully lints our codebase with a few different checkers:
+
+- `pipenv check` scans our Python package dependency graph for known security vulnerabilities
+- `pylint` does static analysis of Python files and reports both style and bug problems
+- `pycodestyle` checks for simple code style guideline violations (somewhat overlapping with `pylint`)
+- `mypy` performs static type checking of Python files
+- `bandit` performs static analysis to find common security vulnerabilities in Python code
+- `shellcheck` finds bugs and potential bugs in shell scrips
+
+A note: in writing Bash scripts, I often refer to [this excellent guide](http://redsymbol.net/articles/unofficial-bash-strict-mode/).
 
 ## Setting up CircleCI
 
@@ -36,6 +50,7 @@ While CircleCI starts the build, let's look at the `config.yml` file.
 Let's also check out the new validation test files: they simply evaluate the trained predictors on respective test sets, and make sure they are above threshold accuracy.
 
 Now that CircleCI is done building, let's push a commit so that we can see it build again, and check out the nice green chechmark in our commit history (https://github.com/sergeyktest/fsdl-text-recognizer-project/commits/master)
+
 
 ## Serving predictions from a web server
 

@@ -1,6 +1,8 @@
-import editdistance
+"""Tests for LinePredictor class."""
 import pathlib
 import unittest
+
+import editdistance
 import numpy as np
 
 import text_recognizer.util as util

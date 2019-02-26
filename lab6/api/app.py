@@ -12,11 +12,11 @@ from text_recognizer.line_predictor import LinePredictor
 # from text_recognizer.datasets import IamLinesDataset
 import text_recognizer.util as util
 
-app = Flask(__name__)
+app = Flask(__name__)  # pylint: disable=invalid-name
 
 # Tensorflow bug: https://github.com/keras-team/keras/issues/2397
 with backend.get_session().graph.as_default() as _:
-    predictor = LinePredictor()
+    predictor = LinePredictor()  # pylint: disable=invalid-name
     # predictor = LinePredictor(dataset_cls=IamLinesDataset)
 
 
@@ -42,18 +42,17 @@ def _load_image():
         if data is None:
             return 'no json received'
         return util.read_b64_image(data['image'], grayscale=True)
-    elif request.method == 'GET':
+    if request.method == 'GET':
         image_url = request.args.get('image_url')
         if image_url is None:
             return 'no image_url defined in query string'
         print("INFO url {}".format(image_url))
         return util.read_image(image_url, grayscale=True)
-    else:
-        raise ValueError('Unsupported HTTP method')
+    raise ValueError('Unsupported HTTP method')
 
 
 def main():
-    app.run(host='0.0.0.0', port=8000, debug=False)
+    app.run(host='0.0.0.0', port=8000, debug=False)  # nosec
 
 
 if __name__ == '__main__':

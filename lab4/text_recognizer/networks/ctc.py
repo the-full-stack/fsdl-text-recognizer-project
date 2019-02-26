@@ -34,11 +34,11 @@ def ctc_decode(y_pred, input_length, max_output_length):
     max_length = max_output_length + 2  # giving 2 extra characters for CTC leeway
     cols = tf.shape(decoded_dense)[-1]
 
-    def f1():
+    def pad():
         return tf.pad(decoded_dense, [[0, 0], [0, max_length - cols]], constant_values=-1)
 
-    def f2():
+    def noop():
         return decoded_dense
 
-    return tf.cond(tf.less(cols, max_length), f1, f2)
+    return tf.cond(tf.less(cols, max_length), pad, noop)
 
