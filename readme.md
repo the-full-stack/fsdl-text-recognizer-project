@@ -28,11 +28,11 @@ Welcome!
 - [x] get rid of non-ctc lstm
 - [x] get to ~100% linted
 - [x] use git-lfs for models
+- [x] add git-lfs to circleci config
+- [x] add linting to lab circleci
 
 - [ ] train a baller IAMLines model and use that in app.py
-- [ ] add git-lfs to circleci config
-- [ ] add linting to lab circleci
-- [ ] add tests for training
+- [ ] add tests for training (but don't run them in circleci)
 - [ ] add metadata.toml and download data in a separate script, not from dataset python file directly
 - [ ] add "subsample" mode to dataset
 - [ ] add to lab 5: output sample predictions every epoch so that they can be reviewed in weights and biases
