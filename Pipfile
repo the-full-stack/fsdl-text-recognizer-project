@@ -11,15 +11,18 @@ h5py = "*"
 numpy = "*"
 opencv-python-headless = "*"
 requests = "*"
-tensorflow-gpu = "*"
+tensorflow-gpu = ">=1.12,<1.13"
+toml = "*"
 
 [dev-packages]
+bandit = "*"
 gpustat = "*"
 gradescope-utils = "*"
 grequests = "*" # admin
+itermplot = "*"
 jupyterlab = "*"
 matplotlib = "*"
-mypy = "*"
+mypy = "==0.660" # TODO (2019-02-27) bump when unresolvable subdependency mismatch between mypy and pylint is resolved
 nltk = "*"
 pycodestyle = "*"
 pylint = "*"
