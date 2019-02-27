@@ -1,5 +1,5 @@
 """IamLinesDataset class."""
-import pathlib
+from pathlib import Path
 from urllib.request import urlretrieve
 
 from boltons.cacheutils import cachedproperty
@@ -10,7 +10,7 @@ from text_recognizer.datasets.base import Dataset, _parse_args
 from text_recognizer.datasets.emnist import EmnistDataset
 
 
-DATA_DIRNAME = pathlib.Path(__file__).parents[2].resolve() / 'data'
+DATA_DIRNAME = Path(__file__).parents[2].resolve() / 'data'
 PROCESSED_DATA_DIRNAME = DATA_DIRNAME / 'processed' / 'iam_lines'
 PROCESSED_DATA_FILENAME = PROCESSED_DATA_DIRNAME / 'iam_lines.h5'
 PROCESSED_DATA_URL = 'https://s3-us-west-2.amazonaws.com/fsdl-public-assets/iam_lines.h5'

@@ -1,12 +1,12 @@
 """Tests for web app."""
-import base64
-import pathlib
+from pathlib import Path
 from unittest import TestCase
+import base64
 
 from api.app import app
 
 
-REPO_DIRNAME = pathlib.Path(__file__).parents[2].resolve()
+REPO_DIRNAME = Path(__file__).parents[2].resolve()
 # SUPPORT_DIRNAME = REPO_DIRNAME / 'text_recognizer' / 'tests' / 'support' / 'iam_lines'
 SUPPORT_DIRNAME = REPO_DIRNAME / 'text_recognizer' / 'tests' / 'support' / 'emnist_lines'
 

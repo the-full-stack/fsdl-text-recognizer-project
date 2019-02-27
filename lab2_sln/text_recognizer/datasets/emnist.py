@@ -3,7 +3,7 @@ EMNIST dataset. Downloads from NIST website and saves as .npz file if not alread
 """
 import json
 import os
-import pathlib
+from pathlib import Path
 import shutil
 import zipfile
 
@@ -23,7 +23,7 @@ METADATA_FILENAME = RAW_DATA_DIRNAME / 'metadata.toml'
 PROCESSED_DATA_DIRNAME = Dataset.data_dirname() / 'processed' / 'emnist'
 PROCESSED_DATA_FILENAME = PROCESSED_DATA_DIRNAME / 'byclass.h5'
 
-ESSENTIALS_FILENAME = pathlib.Path(__file__).parents[0].resolve() / 'emnist_essentials.json'
+ESSENTIALS_FILENAME = Path(__file__).parents[0].resolve() / 'emnist_essentials.json'
 
 
 class EmnistDataset(Dataset):

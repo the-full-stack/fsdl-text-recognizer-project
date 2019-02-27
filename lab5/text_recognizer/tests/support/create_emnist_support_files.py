@@ -1,4 +1,4 @@
-import pathlib
+from pathlib import Path
 import shutil
 
 import numpy as np
@@ -7,7 +7,7 @@ from text_recognizer.datasets.emnist import EmnistDataset
 import text_recognizer.util as util
 
 
-SUPPORT_DIRNAME = pathlib.Path(__file__).parents[0].resolve() / 'emnist'
+SUPPORT_DIRNAME = Path(__file__).parents[0].resolve() / 'emnist'
 
 
 def create_emnist_support_files():

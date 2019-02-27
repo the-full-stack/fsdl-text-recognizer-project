@@ -1,11 +1,11 @@
 """Tests for CharacterPredictor class."""
 import os
-import pathlib
+from pathlib import Path
 import unittest
 
 from text_recognizer.character_predictor import CharacterPredictor
 
-SUPPORT_DIRNAME = pathlib.Path(__file__).parents[0].resolve() / 'support' / 'emnist'
+SUPPORT_DIRNAME = Path(__file__).parents[0].resolve() / 'support' / 'emnist'
 
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
 

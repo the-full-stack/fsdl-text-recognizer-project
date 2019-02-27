@@ -1,6 +1,6 @@
 """Tests for LinePredictor class."""
 import os
-import pathlib
+from pathlib import Path
 import unittest
 
 import editdistance
@@ -12,7 +12,7 @@ from text_recognizer.line_predictor import LinePredictor
 from text_recognizer.datasets import IamLinesDataset
 # Hide lines above until Lab 5
 
-SUPPORT_DIRNAME = pathlib.Path(__file__).parents[0].resolve() / 'support'
+SUPPORT_DIRNAME = Path(__file__).parents[0].resolve() / 'support'
 
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
 

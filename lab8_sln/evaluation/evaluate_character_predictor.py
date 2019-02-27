@@ -1,4 +1,4 @@
-import pathlib
+from pathlib import Path
 from time import time
 import unittest
 
@@ -6,7 +6,7 @@ from text_recognizer.datasets.emnist import EmnistDataset
 from text_recognizer.character_predictor import CharacterPredictor
 
 
-SUPPORT_DIRNAME = pathlib.Path(__file__).parents[0].resolve() / 'support' / 'emnist'
+SUPPORT_DIRNAME = Path(__file__).parents[0].resolve() / 'support' / 'emnist'
 
 
 class TestEvaluateCharacterPredictor(unittest.TestCase):

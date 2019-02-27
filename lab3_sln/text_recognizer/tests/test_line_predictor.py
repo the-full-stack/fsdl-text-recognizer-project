@@ -1,6 +1,6 @@
 """Tests for LinePredictor class."""
 import os
-import pathlib
+from pathlib import Path
 import unittest
 
 import editdistance
@@ -9,7 +9,7 @@ import numpy as np
 import text_recognizer.util as util
 from text_recognizer.line_predictor import LinePredictor
 
-SUPPORT_DIRNAME = pathlib.Path(__file__).parents[0].resolve() / 'support'
+SUPPORT_DIRNAME = Path(__file__).parents[0].resolve() / 'support'
 
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
 

@@ -1,6 +1,6 @@
 """Model class, to be extended by specific types of models."""
+from pathlib import Path
 from typing import Callable, Dict, Optional
-import pathlib
 
 from tensorflow.keras.optimizers import RMSprop
 import numpy as np
@@ -8,7 +8,7 @@ import numpy as np
 from text_recognizer.datasets.sequence import DatasetSequence
 
 
-DIRNAME = pathlib.Path(__file__).parents[1].resolve() / 'weights'
+DIRNAME = Path(__file__).parents[1].resolve() / 'weights'
 
 
 class Model:

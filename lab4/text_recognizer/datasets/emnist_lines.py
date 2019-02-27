@@ -1,5 +1,5 @@
 from collections import defaultdict
-import pathlib
+from pathlib import Path
 
 import h5py
 import numpy as np
@@ -10,7 +10,7 @@ from text_recognizer.datasets.emnist import EmnistDataset
 
 
 DATA_DIRNAME = Dataset.data_dirname() / 'processed' / 'emnist_lines'
-ESSENTIALS_FILENAME = pathlib.Path(__file__).parents[0].resolve() / 'emnist_lines_essentials.json'
+ESSENTIALS_FILENAME = Path(__file__).parents[0].resolve() / 'emnist_lines_essentials.json'
 
 
 class EmnistLinesDataset(Dataset):

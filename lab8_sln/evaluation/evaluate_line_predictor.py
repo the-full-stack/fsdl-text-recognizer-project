@@ -1,12 +1,12 @@
-import pathlib
+from pathlib import Path
 from time import time
 import unittest
 
-from text_recognizer.datasets import EmnistLinesDataset, IamLinesDataset
+from text_recognizer.datasets import EmnistLinesDataset
 from text_recognizer.line_predictor import LinePredictor
 
 
-SUPPORT_DIRNAME = pathlib.Path(__file__).parents[0].resolve() / 'support' / 'emnist_lines'
+SUPPORT_DIRNAME = Path(__file__).parents[0].resolve() / 'support' / 'emnist_lines'
 
 
 class TestEvaluateLinePredictor(unittest.TestCase):
