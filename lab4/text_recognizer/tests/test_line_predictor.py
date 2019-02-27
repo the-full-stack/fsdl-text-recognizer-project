@@ -1,4 +1,5 @@
 """Tests for LinePredictor class."""
+import os
 import pathlib
 import unittest
 
@@ -8,8 +9,9 @@ import numpy as np
 import text_recognizer.util as util
 from text_recognizer.line_predictor import LinePredictor
 
-
 SUPPORT_DIRNAME = pathlib.Path(__file__).parents[0].resolve() / 'support'
+
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 
 class TestEmnistLinePredictor(unittest.TestCase):

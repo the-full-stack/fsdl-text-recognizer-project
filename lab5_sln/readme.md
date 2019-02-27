@@ -21,7 +21,12 @@ The maximum output length is 97 characters, however, vs. our 34 characters.
 
 ## Training
 
-Let's train with the default params by running `tasks/train_lstm_line_predictor_on_iam.sh`.
+Let's train with the default params by running `tasks/train_lstm_line_predictor_on_iam.sh`, which runs the follwing command:
+
+```bash
+pipenv run python training/run_experiment.py --save '{"dataset": "IamLinesDataset", "model": "LineModelCtc", "network": "line_lstm_ctc"}'
+```
+
 This uses the same LSTM with CTC model that we saw succeed on EmnistLines yesterday.
 For me, training for 8 epochs gets test set character accuracy of ~40%, and takes about 10 minutes.
 

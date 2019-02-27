@@ -1,11 +1,13 @@
 """Tests for CharacterPredictor class."""
+import os
 import pathlib
 import unittest
 
 from text_recognizer.character_predictor import CharacterPredictor
 
-
 SUPPORT_DIRNAME = pathlib.Path(__file__).parents[0].resolve() / 'support' / 'emnist'
+
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 
 class TestCharacterPredictor(unittest.TestCase):
@@ -16,6 +18,5 @@ class TestCharacterPredictor(unittest.TestCase):
             pred, conf = predictor.predict(str(filename))
             print(f'Prediction: {pred} at confidence: {conf} for image with character {filename.stem}')
             self.assertEqual(pred, filename.stem)
-            # self.assertGreater(conf, 0.9)
-            # Confidence tests are usually too brittle
+            self.assertGreater(conf, 0.7)
 

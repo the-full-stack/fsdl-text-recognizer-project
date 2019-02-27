@@ -1,19 +1,21 @@
 """Utility functions for text_recognizer module."""
+from pathlib import Path
+from typing import Union
+from urllib.request import urlopen
 import base64
 import os
-from urllib.request import urlopen
 
 import numpy as np
 import cv2
 
 
-def read_image(image_uri, grayscale=False):
+def read_image(image_uri: Union[Path, str], grayscale=False) -> np.array:
     """Read image_uri."""
     def read_image_from_filename(image_filename, imread_flag):
-        return cv2.imread(image_filename, imread_flag)
+        return cv2.imread(str(image_filename), imread_flag)
 
     def read_image_from_url(image_url, imread_flag):
-        url_response = urlopen(image_url)  # nosec
+        url_response = urlopen(str(image_url))  # nosec
         img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
         return cv2.imdecode(img_array, imread_flag)
 
@@ -41,6 +43,6 @@ def read_b64_image(b64_string, grayscale=False):
         raise ValueError("Could not load image from b64 {}: {}".format(b64_string, e))
 
 
-def write_image(image, filename):
-    cv2.imwrite(filename, image)
+def write_image(image: np.ndarray, filename: Union[Path, str]) -> None:
+    cv2.imwrite(str(filename), image)
 

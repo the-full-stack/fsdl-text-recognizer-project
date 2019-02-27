@@ -6,7 +6,7 @@ from boltons.cacheutils import cachedproperty
 import h5py
 from tensorflow.keras.utils import to_categorical
 
-from text_recognizer.datasets.base import Dataset
+from text_recognizer.datasets.base import Dataset, _parse_args
 from text_recognizer.datasets.emnist import EmnistDataset
 
 
@@ -18,25 +18,17 @@ PROCESSED_DATA_URL = 'https://s3-us-west-2.amazonaws.com/fsdl-public-assets/iam_
 
 class IamLinesDataset(Dataset):
     """
-    "The IAM Lines dataset, first published at the ICDAR 1999, contains forms of unconstrained handwritten text,
-    which were scanned at a resolution of 300dpi and saved as PNG images with 256 gray levels.
-    From http://www.fki.inf.unibe.ch/databases/iam-handwriting-database
-
-    The data split we will use is
-    IAM lines Large Writer Independent Text Line Recognition Task (lwitlrt): 9,862 text lines.
-        The validation set has been merged into the train set.
-        The train set has 7,101 lines from 326 writers.
-        The test set has 1,861 lines from 128 writers.
-        The text lines of all data sets are mutually exclusive, thus each writer has contributed to one set only.
 
     Note that we use cachedproperty because data takes time to load.
     """
-    def __init__(self):
+    def __init__(self, subsample_fraction: float = None):
         self.mapping = EmnistDataset().mapping
         self.inverse_mapping = {v: k for k, v in self.mapping.items()}
         self.num_classes = len(self.mapping)
         self.input_shape = (28, 952)
         self.output_shape = (97, self.num_classes)
+
+        self.subsample_fraction = subsample_fraction
         self.x_train = None
         self.x_test = None
         self.y_train_int = None
@@ -53,6 +45,18 @@ class IamLinesDataset(Dataset):
             self.y_train_int = f['y_train'][:]
             self.x_test = f['x_test'][:]
             self.y_test_int = f['y_test'][:]
+        self._subsample()
+
+    def _subsample(self):
+        """Only this fraction of data will be loaded."""
+        if self.subsample_fraction is None:
+            return
+        num_train = int(self.x_train.shape[0] * self.subsample_fraction)
+        num_test = int(self.x_test.shape[0] * self.subsample_fraction)
+        self.x_train = self.x_train[:num_train]
+        self.y_train_int = self.y_train_int[:num_train]
+        self.x_test = self.x_test[:num_test]
+        self.y_test_int = self.y_test_int[:num_test]
 
     @cachedproperty
     def y_train(self):
@@ -77,7 +81,8 @@ class IamLinesDataset(Dataset):
 
 def main():
     """Load dataset and print info."""
-    dataset = IamLinesDataset()
+    args = _parse_args()
+    dataset = IamLinesDataset(subsample_fraction=args.subsample_fraction)
     dataset.load_or_generate_data()
     print(dataset)
 

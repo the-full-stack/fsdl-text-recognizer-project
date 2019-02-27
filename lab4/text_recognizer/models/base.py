@@ -60,7 +60,7 @@ class Model:
             callbacks=callbacks,
             validation_data=test_sequence,
             use_multiprocessing=True,
-            workers=1,
+            workers=2,
             shuffle=True
         )
 

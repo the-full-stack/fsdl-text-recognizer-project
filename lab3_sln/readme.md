@@ -14,7 +14,7 @@ You need to write code in `networks/line_lstm_ctc.py` to make training work.
 Training can be done via
 
 ```sh
-pipenv run python training/run_experiment.py --save '{"dataset": "EmnistLinesDataset", "model": "LineModelCtc", "network": "line_lstm_ctc"}'
+pipenv run python training/run_experiment.py --save '{"train_args": {"epochs": 16}, "dataset": "EmnistLinesDataset", "model": "LineModelCtc", "network": "line_lstm_ctc"}'
 ```
 
 or the shortcut `tasks/train_lstm_line_predictor.sh`
@@ -29,27 +29,6 @@ pipenv run pytest -s text_recognizer/tests/test_line_predictor.py
 ```
 
 Or you can do `tasks/run_prediction_tests.sh`, which will also run the CharacterModel tests.
-
-## Submitting to Gradescope
-
-Before submitting to Gradescope, add your trained weights to the repo, commit and push your changes:
-
-```sh
-git add text_recognizer
-git commit -am "my lab3 work"
-git push mine master
-```
-
-Now go to https://gradescope.com/courses/21098 and click on Lab 3.
-Select your fork of the `fsdl-text-recognizer-project` repo, and click Submit.
-Don't forget to enter a name for the leaderboard :)
-
-The autograder treats code that is in `lab3/text_recognizer` as your submission, so make sure your code is indeed there.
-
-The autograder should finish in a couple of minutes, and display the results.
-Your name will show up in the Leaderboard.
-
-While you wait for the autograder to complete, feel free to try some experiments!
 
 ## Things to try
 

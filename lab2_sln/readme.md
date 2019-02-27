@@ -25,7 +25,7 @@ We can see the results by opening up `notebooks/02-look-at-emnist-lines.ipynb`.
 Add code to `networks/line_cnn_all_conv.py` to make the following command train successfully.
 
 ```sh
-pipenv run training/run_experiment.py '{"dataset": "EmnistLinesDataset", "model": "LineModel", "network": "line_cnn_all_conv", "network_args": {"window_width": 16, "window_stride": 8}}'
+pipenv run training/run_experiment.py '{"train_args": {"epochs": 16}, "dataset": "EmnistLinesDataset", "model": "LineModel", "network": "line_cnn_all_conv", "network_args": {"window_width": 16, "window_stride": 8}}'
 ```
 
 Again, it will take a few minutes to train the model.
