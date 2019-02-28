@@ -35,7 +35,7 @@ class TestEmnistLinePredictorVariableImageWidth(unittest.TestCase):
         for filename in SUPPORT_DIRNAME.glob('*.png'):
             image = util.read_image(str(filename), grayscale=True)
             print('Saved image shape:', image.shape)
-            image = image[:, :-np.random.randint(1, 150)]
+            image = image[:, :-np.random.randint(1, 150)]  # pylint: disable=invalid-unary-operand-type
             print('Randomly cropped image shape:', image.shape)
             pred, conf = predictor.predict(image)
             true = str(filename.stem)

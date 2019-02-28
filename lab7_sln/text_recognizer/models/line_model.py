@@ -42,7 +42,8 @@ class LineModel(Model):
                 print(f'True: {true_strings[ind]}')
                 print(f'Pred: {pred_strings[ind]}')
             print("\nRandom predictions:")
-            for ind in np.random.randint(0, len(char_accuracies), 5):
+            random_ind = np.random.randint(0, len(char_accuracies), 5)
+            for ind in random_ind:  # pylint: disable=not-an-iterable
                 print(f'True: {true_strings[ind]}')
                 print(f'Pred: {pred_strings[ind]}')
         mean_accuracy = np.mean(char_accuracies)

@@ -13,13 +13,13 @@ provider:
   name: aws
   region: us-west-2
   runtime: python3.6
-  memorysize: 1024
+  memorysize: 3096
   timeout: 30
   versionFunctions: false
 
 functions:
   api:
-    handler: wsgi.handler
+    handler: wsgi_handler.handler
     events:
       - http: ANY /
       - http: ANY {proxy+}
@@ -34,10 +34,12 @@ custom:
     packRequirements: false
   pythonRequirements:
     dockerizePip: true
-    slim: false
-    noDeploy:
-      - "pytest"
+    slim: true
     slimPatterns:
-      - "*.egg-info*"
-      - "*tensorboard"
+      - "**/*.egg-info*"
+      - "**/doc"
+      - "**/tensorboard"
+      - "**/tensorflow/contrib"
+      - "**/tests"
+    strip: false
     zip: true

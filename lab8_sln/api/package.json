@@ -4,7 +4,8 @@
   "version": "0.1.0",
   "dependencies": {},
   "devDependencies": {
-    "serverless-python-requirements": "^4.1.1",
-    "serverless-wsgi": "~1.4.9"
+    "serverless-python-requirements": "sergeyk/serverless-python-requirements#master",
+    "serverless-wsgi": "^1.7.1",
+    "serverless": "^1.38.0"
   }
 }

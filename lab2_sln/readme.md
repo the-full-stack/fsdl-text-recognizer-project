@@ -1,33 +1,62 @@
 # Lab 2
 
-In this lab we will implement convolutional networks: first for character recognition, and then for recognizing text in an image of a handwritten line.
+## Goal of the lab
 
-## LeNet
+Move from reading single characters to reading entire lines.
 
-To warm up, let's implement an old classic.
+## Outline
 
-Add enough code to `networks/lenet.py` to be able to run
+- Intro to EMNIST Lines
+- Overview of the model and loss
+- Explore LSTM training code
+- Train an LSTM on EMNIST
 
-```sh
-pipenv run training/run_experiment.py '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "lenet", "train_args": {"epochs": 1}}'
+## Follow along
+
+```
+cd lab2_soln/
 ```
 
-Training the single epoch will take about 2 minutes (that's why we only do one epoch in this lab :)).
-Leave it running while we go on to look at EmnistLines.
+## Intro to the EMNIST Lines dataset
 
-## Emnist Lines
+- Synthetic dataset we built for this project
+- Sample sentences from Brown corpus
+- For each character, sample random EMNIST character and place on a line (with some random overlap)
+- Look at: notebooks/02-look-at-emnist-lines.ipynb
 
-We are generating synthetic data from composing EMNIST characters into a line, sampling text from the Brown corpus!
-We can see the results by opening up `notebooks/02-look-at-emnist-lines.ipynb`.
+## Overview of model and loss
 
-## Train an all-conv model on EmnistLines
+In this lab we'll keep working with the EmnistLines dataset.
 
-Add code to `networks/line_cnn_all_conv.py` to make the following command train successfully.
+We will be implementing LSTM model with CTC loss.
+CTC loss needs to be implemented kind of strangely in Keras: we need to pass in all required data to compute the loss as inputs to the network (including the true label).
+This is an example of a multi-input / multi-output network.
+
+The relevant files to review are `models/line_model_ctc.py`, which shows the batch formatting that needs to happen for the CTC loss to be computed inside of the network, `networks/line_lstm_ctc.py`, which has the network definition.
+
+## Train LSTM model with CTC loss
+
+You need to write code in `networks/line_lstm_ctc.py` to make training work.
+Training can be done via
 
 ```sh
-pipenv run training/run_experiment.py '{"train_args": {"epochs": 16}, "dataset": "EmnistLinesDataset", "model": "LineModel", "network": "line_cnn_all_conv", "network_args": {"window_width": 16, "window_stride": 8}}'
+pipenv run python training/run_experiment.py --save '{"train_args": {"epochs": 16}, "dataset": "EmnistLinesDataset", "model": "LineModelCtc", "network": "line_lstm_ctc"}'
 ```
 
-Again, it will take a few minutes to train the model.
+or the shortcut `tasks/train_lstm_line_predictor.sh`
 
-You should be able to get to ~70% character accuracy with the default params.
+## Make sure the model is able to predict
+
+You will also need to write some code in `models/line_model_ctc.py` to predict on images.
+After that, you should see tests pass when you run
+
+```sh
+pipenv run pytest -s text_recognizer/tests/test_line_predictor.py
+```
+
+Or you can do `tasks/run_prediction_tests.sh`, which will also run the CharacterModel tests.
+
+## Things to try
+
+If you have time left over, or want to play around with this later on, you can try writing your own non-CTC `line_lstm` network (define it in `text_recognizer/networks/line_lstm.py`).
+For example, you could code up an encoder-decoder architecture with attention.

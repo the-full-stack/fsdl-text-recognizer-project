@@ -4,13 +4,9 @@ Welcome!
 
 Project developed during lab sessions of the [Full Stack Deep Learning Bootcamp](https://fullstackdeeplearning.com).
 
-- In this lab we will build a handwriting recognition system from scratch, and deploy it as a web service.
-- We will use Keras with Tensorflow backend as the underlying framework.
-- The framework will not lock us in to many design choices, and can easily be replaced with, for example, PyTorch.
-- We will structure the project in a way that will scale with future development and allow us to run experiments.
-- We will evaluate both convolutional and sequence methods for the task, and will see an example of how to compute loss in a more advanced way.
-- We will sync our experimental runs to Weights & Biases, and use it as a leaderboard.
-- We will run experiments on multiple GPUs, and store results to an online experiment management platform.
+- We will build a handwriting recognition system from scratch, and deploy it as a web service.
+- Uses Keras, but designed to be modular, hackable, and scalable
+- Provides code for training models in parallel and store evaluation in Weights & Biases
 - We will set up continuous integration system for our codebase, which will check functionality of code and evaluate the model about to be deployed.
 - We will package up the prediction system as a REST API, deployable as a Docker container.
 - We will deploy the prediction system as a serverless function to Amazon Lambda.
@@ -19,8 +15,9 @@ Project developed during lab sessions of the [Full Stack Deep Learning Bootcamp]
 ## Schedule for the Spring 2019 Bootcamp
 
 - First session (90 min)
+  - Introduction to the labs.
   - Lab 0 (15 min): gather handwriting data and get setup
-  - Lab 1 (45 min): task intro, intro to IAM, intro to EMNIST, project structure explained on simple EMNIST MLP model, linting in editor, testing
+  - Lab 1 (45 min): Project structure. Intro to EMNIST. Simple EMNIST MLP model, training, testing.
   - Lab 2 (20 min): Introduce approach of synthetic data, go through EMNIST lines, and then CNN solution for EMNIST Lines
   - Lab 3 (10 min): LSTM+CTC solution for EMNIST Lines
 - Second session (60 min)
@@ -33,3 +30,47 @@ Project developed during lab sessions of the [Full Stack Deep Learning Bootcamp]
     - Go through data versioning and even have a little labeling interface for fresh data that they generated on the first day
 - Fourth session (75 min)
   - Lab 8 (75 min) testing & deployment
+
+# Setup
+
+## 1. Setup a JupyterLab instance
+
+- Go to https://app.wandb.ai/profile
+- Enter the code we will share with you at the session into Access Code field.
+- You should be dropped into a JuypyterLab instance with 2 GPUs to use for labs.
+
+*From now on, do everything else in that instance*
+
+## 2. Check out the repo
+
+Open a shell in your JupyterLab instance and run
+
+```sh
+git clone https://github.com/gradescope/fsdl-text-recognizer-project.git
+cd fsdl-text-recognizer-project
+```
+
+If you already have the repo in your home directory, then simply go into it and pull the latest version.
+
+```sh
+cd fsdl-text-recognizer-project
+git pull origin master
+```
+
+## 3. Set up the Python environment
+
+Run
+
+```sh
+pipenv install --dev
+```
+
+From now on, precede commands with `pipenv run` to make sure they use the correct
+environment.
+
+# Ready
+
+Now you should be setup for the labs. The instructions for each lab are in readme files in their folders.
+
+You will notice that there are solutions for all the labs right here in the repo, too.
+If you get stuck, you are welcome to take a look!

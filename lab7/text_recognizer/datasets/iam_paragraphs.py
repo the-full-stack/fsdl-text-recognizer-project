@@ -1,10 +1,8 @@
 """IamParagraphsDataset class and functions for data processing."""
 from pathlib import Path
 
-from boltons.cacheutils import cachedproperty
 from tensorflow.keras.utils import to_categorical
 import cv2
-import h5py
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -12,12 +10,12 @@ from text_recognizer.datasets.base import Dataset, _parse_args
 from text_recognizer.datasets.iam import IamDataset
 from text_recognizer import util
 
-
 DATA_DIRNAME = Path(__file__).parents[2].resolve() / 'data'
 INTERIM_DATA_DIRNAME = DATA_DIRNAME / 'interim' / 'iam_paragraphs'
-DEBUG_CROPS_DIRNAME = INTERIM_DATA_DIRNAME / 'paragraph_crops_for_debug'
+DEBUG_CROPS_DIRNAME = INTERIM_DATA_DIRNAME / 'debug_crops'
 PROCESSED_DATA_DIRNAME = DATA_DIRNAME / 'processed' / 'iam_paragraphs'
-PROCESSED_DATA_FILENAME = PROCESSED_DATA_DIRNAME / 'data.h5'
+CROPS_DIRNAME = PROCESSED_DATA_DIRNAME / 'crops'
+GT_DIRNAME = PROCESSED_DATA_DIRNAME / 'gt'
 
 # On top of IAM forms being downsampled, we will downsample the paragraph crops once more, to make convnets tractable.
 DOWNSAMPLE_FACTOR = 2
@@ -38,29 +36,49 @@ class IamParagraphsDataset(Dataset):
         self.output_shape = (512, 512, self.num_classes)
 
         self.subsample_fraction = subsample_fraction
-        self.x_train = None
-        self.x_test = None
-        self.y_train_int = None
-        self.y_test_int = None
+        self.ids = None
+        self.x = None
+        self.y = None
+        self.ids = None
 
     def load_or_generate_data(self):
         """Load or generate dataset data."""
-        if not PROCESSED_DATA_FILENAME.exists():
+        num_actual = len(list(CROPS_DIRNAME.glob('*.jpg')))
+        num_target = len(self.iam_dataset.line_regions_by_id)
+        if num_actual < num_target - 2:  # There are a couple of instances that could not be cropped
             self._process_iam_paragraphs()
-        with h5py.File(PROCESSED_DATA_FILENAME, 'r') as f:
-            self.x_train = f['x_train'][:] / 255
-            self.y_train_int = f['y_train_int'][:]
-            self.x_test = f['x_test'][:] / 255
-            self.y_test_int = f['y_test_int'][:]
+
+        self.x, self.y, self.ids = _load_iam_paragraphs()
+        self.train_ind, self.test_ind = _get_random_split(self.x.shape[0])
         self._subsample()
 
-    @cachedproperty
-    def y_train(self):
-        return _transform_to_categorical(self.y_train_int)
+    @property
+    def x_train(self):
+        return self.x[self.train_ind]
 
-    @cachedproperty
+    @property
+    def y_train(self):
+        return self.y[self.train_ind]
+
+    @property
+    def x_test(self):
+        return self.x[self.test_ind]
+
+    @property
     def y_test(self):
-        return _transform_to_categorical(self.y_test_int)
+        return self.x[self.test_ind]
+
+    @property
+    def ids_train(self):
+        return self.ids[self.train_ind]
+
+    @property
+    def ids_test(self):
+        return self.ids[self.test_ind]
+
+    def get_x_and_y_from_id(self, id_):
+        ind = self.ids.index(id_)
+        return self.x[ind], self.y[ind]
 
     def _process_iam_paragraphs(self):
         """
@@ -69,33 +87,14 @@ class IamParagraphsDataset(Dataset):
         0=background, 1=odd-numbered line, 2=even-numbered line
         """
         crop_dims = self._decide_on_crop_dims()
+        CROPS_DIRNAME.mkdir(parents=True, exist_ok=True)
         DEBUG_CROPS_DIRNAME.mkdir(parents=True, exist_ok=True)
+        GT_DIRNAME.mkdir(parents=True, exist_ok=True)
         print(f'Cropping paragraphs, generating ground truth, and saving debugging images to {DEBUG_CROPS_DIRNAME}')
-        x = []
-        y = []
         for filename in self.iam_dataset.form_filenames:
-            name = filename.stem
-            line_region = self.iam_dataset.line_regions_by_name[name]
-            crop_image, gt_image = _crop_paragraph_image(filename, line_region, crop_dims, self.input_shape)
-            if crop_image is None or gt_image is None:
-                continue
-            x.append(crop_image)
-            y.append(gt_image)
-        x = np.array(x)
-        y = np.array(y)
-
-        num_total = x.shape[0]
-        num_train = int((1 - TEST_FRACTION) * num_total)
-        shuffled_ind = np.random.permutation(num_total)
-        train_ind, test_ind = shuffled_ind[:num_train], shuffled_ind[num_train:]
-
-        print('Saving to HDF5 in a compressed format...')
-        PROCESSED_DATA_DIRNAME.mkdir(parents=True, exist_ok=True)
-        with h5py.File(PROCESSED_DATA_FILENAME, 'w') as f:
-            f.create_dataset('x_train', data=x[train_ind], dtype='u1', compression='lzf')
-            f.create_dataset('y_train_int', data=y[train_ind], dtype='u1', compression='lzf')
-            f.create_dataset('x_test', data=x[test_ind], dtype='u1', compression='lzf')
-            f.create_dataset('y_test_int', data=y[test_ind], dtype='u1', compression='lzf')
+            id_ = filename.stem
+            line_region = self.iam_dataset.line_regions_by_id[id_]
+            _crop_paragraph_image(filename, line_region, crop_dims, self.input_shape)
 
     def _decide_on_crop_dims(self):
         """
@@ -110,7 +109,7 @@ class IamParagraphsDataset(Dataset):
         sample_form_filename = self.iam_dataset.form_filenames[0]
         sample_image = util.read_image(sample_form_filename, grayscale=True)
         max_crop_width = sample_image.shape[1]
-        max_crop_height = _get_max_paragraph_crop_height(self.iam_dataset.line_regions_by_name)
+        max_crop_height = _get_max_paragraph_crop_height(self.iam_dataset.line_regions_by_id)
         assert max_crop_height <= max_crop_width
         crop_dims = (max_crop_width, max_crop_width)
         print(f'Max crop width and height were found to be {max_crop_width}x{max_crop_height}.')
@@ -121,12 +120,10 @@ class IamParagraphsDataset(Dataset):
         """Only this fraction of data will be loaded."""
         if self.subsample_fraction is None:
             return
-        num_train = int(self.x_train.shape[0] * self.subsample_fraction)
-        num_test = int(self.x_test.shape[0] * self.subsample_fraction)
-        self.x_train = self.x_train[:num_train]
-        self.y_train_int = self.y_train_int[:num_train]
-        self.x_test = self.x_test[:num_test]
-        self.y_test_int = self.y_test_int[:num_test]
+        num_subsample = int(self.x.shape[0] * self.subsample_fraction)
+        self.x = self.x[:num_subsample]
+        self.y = self.y[:num_subsample]
+        self.ids = self.ids[:num_subsample]
 
     def __repr__(self):
         """Print info about the dataset."""
@@ -138,9 +135,9 @@ class IamParagraphsDataset(Dataset):
         )
 
 
-def _get_max_paragraph_crop_height(line_regions_by_name):
+def _get_max_paragraph_crop_height(line_regions_by_id):
     heights = []
-    for regions in line_regions_by_name.values():
+    for regions in line_regions_by_id.values():
         min_y1 = min(r['y1'] for r in regions) - PARAGRAPH_BUFFER
         max_y2 = max(r['y2'] for r in regions) + PARAGRAPH_BUFFER
         height = max_y2 - min_y1
@@ -163,7 +160,7 @@ def _crop_paragraph_image(filename, line_regions, crop_dims, final_dims):
         image_crop[buffer:buffer + height] = image[min_y1:max_y2]
     except Exception as e:
         print(f'Rescued {filename}: {e}')
-        return None, None
+        return
 
     # Generate ground truth
     gt_image = np.zeros_like(image_crop, dtype=np.uint8)
@@ -171,7 +168,7 @@ def _crop_paragraph_image(filename, line_regions, crop_dims, final_dims):
         gt_image[
             (region['y1'] - min_y1 + buffer):(region['y2'] - min_y1 + buffer),
             region['x1']:region['x2']
-        ] = ind + 1
+        ] = ind % 2 + 1
 
     # Generate image for debugging
     cmap = plt.get_cmap('Set1')
@@ -188,25 +185,39 @@ def _crop_paragraph_image(filename, line_regions, crop_dims, final_dims):
     image_crop_for_debug = cv2.resize(image_crop_for_debug, final_dims, interpolation=cv2.INTER_CUBIC)
     util.write_image(image_crop_for_debug, DEBUG_CROPS_DIRNAME / f'{filename.stem}.jpg')
 
-    image_crop = cv2.resize(image_crop, final_dims, interpolation=cv2.INTER_CUBIC)
-    gt_image = cv2.resize(gt_image, final_dims, interpolation=cv2.INTER_CUBIC)
+    image_crop = cv2.resize(image_crop, final_dims, interpolation=cv2.INTER_CUBIC)  # Quality interpolation for input
+    util.write_image(image_crop, CROPS_DIRNAME / f'{filename.stem}.jpg')
 
-    return image_crop, gt_image
+    gt_image = cv2.resize(gt_image, final_dims, interpolation=cv2.INTER_NEAREST)  # No interpolation for labels
+    util.write_image(gt_image, GT_DIRNAME / f'{filename.stem}.png')
 
 
-def _transform_to_categorical(gt_images):
-    """
-    gt_images has a unique value for every line.
-    We transform to just three values, and one-hot encode.
-    """
-    categorical_gt_images = []
-    for gt_image in gt_images:
-        for ind, value in enumerate(np.unique(gt_image)):
-            if value == 0:
-                continue
-            gt_image[gt_image == value] = ind % 2 + 1
-        categorical_gt_images.append(to_categorical(gt_image, 3))
-    return np.array(categorical_gt_images).astype(bool)
+def _load_iam_paragraphs():
+    print('Loading IAM paragraph crops and ground truth from image files...')
+    images = []
+    gt_images = []
+    ids = []
+    for filename in CROPS_DIRNAME.glob('*.jpg'):
+        id_ = filename.stem
+        image = util.read_image(filename, grayscale=True)
+
+        gt_filename = GT_DIRNAME / f'{id_}.png'
+        gt_image = util.read_image(gt_filename, grayscale=True)
+
+        images.append(image / 255)
+        gt_images.append(gt_image)
+        ids.append(id_)
+    images = np.array(images).astype(np.float32)
+    gt_images = to_categorical(np.array(gt_images), 3)
+    return images, gt_images, np.array(ids)
+
+
+def _get_random_split(num_total):
+    np.random.seed(42)
+    num_train = int((1 - TEST_FRACTION) * num_total)
+    ind = np.random.permutation(num_total)
+    train_ind, test_ind = ind[:num_train], ind[num_train:]  # pylint: disable=unsubscriptable-object
+    return train_ind, test_ind
 
 
 def main():

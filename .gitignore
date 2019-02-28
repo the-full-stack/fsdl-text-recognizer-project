@@ -2,8 +2,12 @@
 data/processed
 data/interim
 data/raw/emnist/matlab.zip
+data/raw/fsdl_paragraphs/images
 data/raw/iam/iamdb
 data/raw/iam/iamdb.zip
+
+# API requirements (should be generated via pipenv lock --requirements --dev > api/requirements.txt)
+api/requirements.txt
 
 # Editors
 .vscode

@@ -24,7 +24,8 @@ class GPUUtilizationSampler(Callback):
     def on_batch_end(self, _batch, logs=None):
         if logs is None:
             logs = {}
-        if np.random.rand() > 0.99:
+        random_val = np.random.rand()
+        if random_val > 0.99:  # pylint: disable=comparison-with-callable
             try:
                 gpu_info = gpustat.GPUStatCollection.new_query()[self.gpu_ind]
                 self.samples.append(gpu_info.utilization)

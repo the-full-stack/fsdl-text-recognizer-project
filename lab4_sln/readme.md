@@ -1,70 +1,57 @@
-# Lab 4
+# Lab 4: Experimentation
 
-In this lab, we will get familiar with Weights & Biases, and start using an experiment-running framework that will make it easy to distribute work onto multiple GPUs.
+In this lab we will introduce the IAM handwriting dataset, and give you a chance to try out different things, run experiments, and review results on W&B.
 
-Before getting started, make sure to `git pull` to ensure you have the latest version of the labs and instructions!
+## Goal of the lab
+- Introduce IAM handwriting dataset
+- Try some ideas & review results on W&B
+- See who can get the best score :)
 
-## Weights & Biases
+## Outline
+- Intro to IAM datasets
+- Train a baseline model
+- Try your own ideas
 
-In lab4, you'll notice some new lines in `training/run_experiment.py` now: we are now importing and initializing `wandb`, the Weights & Biases package.
-
-Because of this, you need to run  `wandb init`. For the team, you can choose your W&B username, and for the project, you can name it `fsdl-text-recognizer-project`.
-Note that `wandb init` will give you some instructions about lines to add to your training script. You can ignore that, as we've already done so as described above.
-
-Now let's test it out with a quick experiment: run `tasks/train_character_predictor.sh`
-
-When the run starts, you'll see some output from `wandb` that looks like this:
-
-```
-wandb: Started W&B process version 0.6.17 with PID <xxxx>
-wandb: Syncing https://api.wandb.ai/<USERNAME>/fsdl-text-recognizer-project/runs/<xxxxxx>
-```
-
-Click on the link in the second line (you may need to scroll up a bit), and check out the progress as your model trains. Don't stay there too long though!
-Head back and kick off another experiment -- you'll be able to see both runs happen in parallel.
-
-Let's launch another experiment in a different terminal window, on a different GPU.
-Open up another terminal (by clicking File->New->Terminal), `cd fsdl-text-recognizer-project/lab4`, and launch the same experiment, but with a bigger batch size:
-
-```sh
-pipenv run python training/run_experiment.py --save '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "train_args": {"batch_size": 512}}' --gpu=1
-```
-
-Note the `--gpu=1` flag at the end. Because the default gpu index is 0, if we launched this experiment without the flag, it would try allocating on the GPU that's already in use.
-With the flag, it runs on a different GPU.
-
-You can now go to https://app.wandb.ai, click into your project, and see both runs happening at the same time!
-We'll show you how you can add a chart to visualize all of your training runs.
-
-## Running multiple experiments
-
-It would be nice to be able to define multiple experiments and then just queue them up for training.
-We can do that with the `training/prepare_experiments.py` framework.
-
-Let's check it out. Run `tasks/prepare_sample_experiments.sh` or `pipenv run training/prepare_experiments.py training/experiments/sample.json`
-
-You should see the following:
+## Follow along
 
 ```
-pipenv run python training/run_experiment.py --gpu=-1 '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "network_args": {"num_layers": 2}, "train_args": {"batch_size": 256}, "experiment_group": "Sample Experiments 2"}'
-pipenv run python training/run_experiment.py --gpu=-1 '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "network_args": {"num_layers": 4}, "train_args": {"batch_size": 256}, "experiment_group": "Sample Experiments 2"}'
-pipenv run python training/run_experiment.py --gpu=-1 '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "lenet", "train_args": {"batch_size": 256}, "experiment_group": "Sample Experiments 2"}'
+cd lab4_soln/
+wandb init
+   - team: fsdl
+   - project: fsdl-text-recognizer-project
 ```
 
-Each line corresponds to an experiment.
-The `--gpu=-1` flag makes use of a new file in this lab: `training/gpu_manager.py`, which finds an unused GPU, or waits until one is available.
+## IAM Lines Dataset
 
-Because of this behavior, we can run all these lines in parallel:
+- Look at `notebooks/03-look-at-iam-lines.ipynb`.
 
-```sh
-tasks/prepare_sample_experiments.sh | parallel -j2
+## Training
+
+Let's train with the default params by running `tasks/train_lstm_line_predictor_on_iam.sh`, which runs the follwing command:
+
+```bash
+pipenv run python training/run_experiment.py --save '{"dataset": "IamLinesDataset", "model": "LineModelCtc", "network": "line_lstm_ctc"}'
 ```
 
-This will run experiments two at a time, and as soon as one finishes, another one will start.
+This uses our LSTM with CTC model. 8 epochs gets accuracy of 40% and takes about 10 minutes.
 
-Although you can't see output in the terminal, you can confirm that the experiments are running by going to Weights and Biases.
+Training longer will keep improving: the same settings get to 60% accuracy in 40 epochs. 
 
-## More cool things about W&B
+## Ideas for things to try
 
-- `pipenv run wandb restore <run_id>` will check out the code and the best model
-- sample project showing cool plots: https://app.wandb.ai/wandb/face-emotion?view=default
+For the rest of the lab, let's play around with different things and see if we can improve performance quickly.
+
+You can see all of our training runs here: https://app.wandb.ai/fsdl/fsdl-text-recognizer-project
+Feel free to peek in on your neighbors!
+
+If you commit and push your code changes, then the run will also be linked to the exact code your ran, which you will be able to review months later if necessary.
+
+
+- Change sliding window width/stride
+- Not using a sliding window: instead of sliding a LeNet over, you could just run the input through a few conv/pool layers, squeeze out the last (channel) dimension (which should be 0), and input the result into the LSTM. You can play around with the parameters there.
+- Change number of LSTM dimensions
+- Wrap the LSTM in a Bidirectional() wrapper, which will have two LSTMs read the input forward and backward and concatenate the outputs
+- Stack a few layers of LSTMs
+- Try to get an all-conv approach to work for faster training
+- Add BatchNormalization
+- Come up with your own!
