@@ -29,18 +29,7 @@ def line_cnn_all_conv(
     # remember that padding is set to 'valid' (by default) in the network above.
 
     # Your code below (Lab 2)
-    # (image_height // 2 - 2, image_width // 2 - 2, 64)
-    new_height = image_height // 2 - 2
-    new_width = image_width // 2 - 2
-    new_window_width = window_width // 2 - 2
-    new_window_stride = window_stride // 2
-    model.add(Conv2D(128, (new_height, new_window_width), (1, new_window_stride), activation='relu'))
-    model.add(Dropout(0.2))
-    # (1, num_windows, 128)
 
-    num_windows = int((new_width - new_window_width) / new_window_stride) + 1
-
-    model.add(Reshape((num_windows, 128, 1)))
     # Your code above (Lab 2)
     # (num_windows, 128, 1)
 

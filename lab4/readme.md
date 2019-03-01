@@ -1,57 +1,123 @@
-# Lab 4: Experimentation
-
-In this lab we will introduce the IAM handwriting dataset, and give you a chance to try out different things, run experiments, and review results on W&B.
+# Lab 4
 
 ## Goal of the lab
-- Introduce IAM handwriting dataset
-- Try some ideas & review results on W&B
-- See who can get the best score :)
+
+Get familiar with our experiment running and experiment management tools
 
 ## Outline
-- Intro to IAM datasets
-- Train a baseline model
-- Try your own ideas
+
+- Introduction to Weights & Biases
+- Running multiple experiments in parallel
 
 ## Follow along
 
 ```
+git pull
 cd lab4_soln/
+```
+
+## Intro to Weights & Biases
+
+### Motivation for W&B
+- Keep track of all experiments in one place
+- Easily compare runs
+- Look at results from the whole team
+
+### Let's get started with W&B!
+
+```
 wandb init
-   - team: fsdl
-   - project: fsdl-text-recognizer-project
 ```
 
-## IAM Lines Dataset
-
-- Look at `notebooks/03-look-at-iam-lines.ipynb`.
-
-## Training
-
-Let's train with the default params by running `tasks/train_lstm_line_predictor_on_iam.sh`, which runs the follwing command:
-
-```bash
-pipenv run python training/run_experiment.py --save '{"dataset": "IamLinesDataset", "model": "LineModelCtc", "network": "line_lstm_ctc"}'
+You should see something like:
+```
+? Which team should we use? (Use arrow keys)
+> your_username
+Manual Entry
 ```
 
-This uses our LSTM with CTC model. 8 epochs gets accuracy of 40% and takes about 10 minutes.
+Select your username. 
 
-Training longer will keep improving: the same settings get to 60% accuracy in 40 epochs. 
+```
+Which project should we use?
+> Create New
+```
+Select `fsdl-text-recognizer-project`.
 
-## Ideas for things to try
+How to implement W&B in training code?
 
-For the rest of the lab, let's play around with different things and see if we can improve performance quickly.
+Look at `training/run_experiment.py`.
 
-You can see all of our training runs here: https://app.wandb.ai/fsdl/fsdl-text-recognizer-project
-Feel free to peek in on your neighbors!
+### Your first W&B experiment
 
-If you commit and push your code changes, then the run will also be linked to the exact code your ran, which you will be able to review months later if necessary.
+Run
 
+```
+tasks/train_character_predictor.sh
+```
 
-- Change sliding window width/stride
-- Not using a sliding window: instead of sliding a LeNet over, you could just run the input through a few conv/pool layers, squeeze out the last (channel) dimension (which should be 0), and input the result into the LSTM. You can play around with the parameters there.
-- Change number of LSTM dimensions
-- Wrap the LSTM in a Bidirectional() wrapper, which will have two LSTMs read the input forward and backward and concatenate the outputs
-- Stack a few layers of LSTMs
-- Try to get an all-conv approach to work for faster training
-- Add BatchNormalization
-- Come up with your own!
+You should see:
+
+```
+wandb: Started W&B process version 0.6.17 with PID <xxxx>
+wandb: Syncing https://api.wandb.ai/<USERNAME>/fsdl-text-recognizer-project/runs/<xxxxxx>
+```
+
+Click the link to see your run train.
+
+## Running multiple experiments
+
+### Your second W&B experiment
+
+- Open up another terminal (click File->New->Terminal)
+- `cd fsdl-text-recognizer-project/lab4`
+- launch the same experiment, but with a bigger batch size
+
+```sh
+pipenv run python training/run_experiment.py --save '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "train_args": {"batch_size": 512}}' --gpu=1
+```
+
+Check out both runs at https://app.wandb.ai
+
+### Automatically running multiple experiments
+
+Desiderata for single-machine parallel experimentation code
+- Define multiple experiments and run them simultaneously on all available GPUs
+- Run more experiments than GPUs and automatically queue up extras
+
+Let's look at a simple implementation of these:
+- Look at `training/prepare_experiments.py`
+- Look at `training/gpu_manager.py`
+
+Let's check it out. Run 
+
+```
+tasks/prepare_sample_experiments.sh
+``` 
+
+or `pipenv run training/prepare_experiments.py training/experiments/sample.json`
+
+You should see the following:
+
+```
+pipenv run python training/run_experiment.py --gpu=-1 '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "network_args": {"num_layers": 2}, "train_args": {"batch_size": 256}, "experiment_group": "Sample Experiments 2"}'
+pipenv run python training/run_experiment.py --gpu=-1 '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "network_args": {"num_layers": 4}, "train_args": {"batch_size": 256}, "experiment_group": "Sample Experiments 2"}'
+pipenv run python training/run_experiment.py --gpu=-1 '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "lenet", "train_args": {"batch_size": 256}, "experiment_group": "Sample Experiments 2"}'
+```
+
+Each line corresponds to an experiment.
+
+Because of this behavior, we can run all these lines in parallel:
+
+```sh
+tasks/prepare_sample_experiments.sh | parallel -j2
+```
+
+This will run experiments two at a time, and as soon as one finishes, another one will start.
+
+Although you can't see output in the terminal, you can confirm that the experiments are running by going to Weights and Biases.
+
+## More cool things about W&B
+
+- `pipenv run wandb restore <run_id>` will check out the code and the best model
+- sample project showing cool plots: https://app.wandb.ai/wandb/face-emotion?view=default

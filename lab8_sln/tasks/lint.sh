@@ -20,7 +20,7 @@ echo "bandit"
 pipenv run bandit -ll -r {api,text_recognizer,training} -x node_modules,.serverless || FAILURE=true
 
 echo "shellcheck"
-find . -name "*.sh" ! -path "*node_modules*" | xargs -o -n1 shellcheck || FAILURE=true
+shellcheck tasks/*.sh || FAILURE=true
 
 if [ "$FAILURE" = true ]; then
   echo "Linting failed"

@@ -1,62 +1,83 @@
-# Lab 2
+# Lab 2: Single-character prediction
 
 ## Goal of the lab
 
-Move from reading single characters to reading entire lines.
+Train a model to solve a simplified version of the line text recognition problem.
 
 ## Outline
 
-- Intro to EMNIST Lines
-- Overview of the model and loss
-- Explore LSTM training code
-- Train an LSTM on EMNIST
+- Intro to EMNIST, a character prediction dataset.
+- Explore the `networks` and `training` code.
+- Train simple MLP/CNN baselines to solve EMNIST.
+- Test your model.
 
 ## Follow along
 
 ```
-cd lab2_soln/
+cd lab2_sln/
 ```
 
-## Intro to the EMNIST Lines dataset
+## Intro to EMNIST
 
-- Synthetic dataset we built for this project
-- Sample sentences from Brown corpus
-- For each character, sample random EMNIST character and place on a line (with some random overlap)
-- Look at: notebooks/02-look-at-emnist-lines.ipynb
+- EMNIST = Extended Mini-NIST :)
+- All English letters and digits presented in the MNIST format.
+- Look at: `notebooks/01-look-at-emnist.ipynb`
 
-## Overview of model and loss
+## Networks and training code
 
-In this lab we'll keep working with the EmnistLines dataset.
+- Look at `text_recognizer/networks/mlp.py`
+- Look at `text_recognizer/networks/lenet.py`
+- Look at `text_recognizer/models/base.py`
+- Look at `text_recognizer/models/character_model.py`
+- Look at `training/util.py`
 
-We will be implementing LSTM model with CTC loss.
-CTC loss needs to be implemented kind of strangely in Keras: we need to pass in all required data to compute the loss as inputs to the network (including the true label).
-This is an example of a multi-input / multi-output network.
+## Train MLP and CNN
 
-The relevant files to review are `models/line_model_ctc.py`, which shows the batch formatting that needs to happen for the CTC loss to be computed inside of the network, `networks/line_lstm_ctc.py`, which has the network definition.
-
-## Train LSTM model with CTC loss
-
-You need to write code in `networks/line_lstm_ctc.py` to make training work.
-Training can be done via
+You can run the shortcut command `tasks/train_character_predictor.sh`, which runs the following:
 
 ```sh
-pipenv run python training/run_experiment.py --save '{"train_args": {"epochs": 16}, "dataset": "EmnistLinesDataset", "model": "LineModelCtc", "network": "line_lstm_ctc"}'
+pipenv run training/run_experiment.py --save '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp",  "train_args": {"batch_size": 256}}'
 ```
 
-or the shortcut `tasks/train_lstm_line_predictor.sh`
+It will take a couple of minutes to train your model.
 
-## Make sure the model is able to predict
-
-You will also need to write some code in `models/line_model_ctc.py` to predict on images.
-After that, you should see tests pass when you run
+Just for fun, you could also try a larger MLP, with a smaller batch size:
 
 ```sh
-pipenv run pytest -s text_recognizer/tests/test_line_predictor.py
+pipenv run training/run_experiment.py '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "network_args": {"num_layers": 8}, "train_args": {"batch_size": 128}}'
 ```
 
-Or you can do `tasks/run_prediction_tests.sh`, which will also run the CharacterModel tests.
+Let's also train a CNN on the same task.
 
-## Things to try
+```sh
+pipenv run training/run_experiment.py '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "lenet", "train_args": {"epochs": 1}}'
+```
 
-If you have time left over, or want to play around with this later on, you can try writing your own non-CTC `line_lstm` network (define it in `text_recognizer/networks/line_lstm.py`).
-For example, you could code up an encoder-decoder architecture with attention.
+Training the single epoch will take about 2 minutes (that's why we only do one epoch in this lab :)).
+Leave it running while we go on to the next part.
+
+
+It is very useful to be able to subsample the dataset for quick experiments.
+This is possibe by passing `subsample_fraction=0.1` (or some other fraction) at dataset initialization, or in `dataset_args` in the `run_experiment.py` dictionary, for example:
+
+```sh
+pipenv run training/run_experiment.py '{"dataset": "EmnistDataset", "dataset_args": {"subsample_fraction": 0.1}, "model": "CharacterModel", "network": "mlp"}'
+```
+
+## Testing
+
+First, let's take a look at how the test works at
+
+```
+text_recognizer/tests/test_character_predictor.py
+```
+
+Now let's see if it works by running:
+
+```sh
+pipenv run pytest -s text_recognizer/tests/test_character_predictor.py
+```
+
+Or, use the shorthand `tasks/run_prediction_tests.sh`
+
+Testing should finish quickly.

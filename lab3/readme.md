@@ -1,123 +1,62 @@
-# Lab 3
+# Lab 2
 
 ## Goal of the lab
 
-Get familiar with our experiment running and experiment management tools
+Move from reading single characters to reading entire lines.
 
 ## Outline
 
-- Introduction to Weights & Biases
-- Running multiple experiments in parallel
+- Intro to EMNIST Lines
+- Overview of the model and loss
+- Explore LSTM training code
+- Train an LSTM on EMNIST
 
 ## Follow along
 
 ```
-git pull
 cd lab3_soln/
 ```
 
-## Intro to Weights & Biases
+## Intro to the EMNIST Lines dataset
 
-### Motivation for W&B
-- Keep track of all experiments in one place
-- Easily compare runs
-- Look at results from the whole team
+- Synthetic dataset we built for this project
+- Sample sentences from Brown corpus
+- For each character, sample random EMNIST character and place on a line (with some random overlap)
+- Look at: notebooks/02-look-at-emnist-lines.ipynb
 
-### Let's get started with W&B!
+## Overview of model and loss
 
-```
-wandb init
-```
+In this lab we'll keep working with the EmnistLines dataset.
 
-You should see something like:
-```
-? Which team should we use? (Use arrow keys)
-> your_username
-Manual Entry
-```
+We will be implementing LSTM model with CTC loss.
+CTC loss needs to be implemented kind of strangely in Keras: we need to pass in all required data to compute the loss as inputs to the network (including the true label).
+This is an example of a multi-input / multi-output network.
 
-Select your username. 
+The relevant files to review are `models/line_model_ctc.py`, which shows the batch formatting that needs to happen for the CTC loss to be computed inside of the network, `networks/line_lstm_ctc.py`, which has the network definition.
 
-```
-Which project should we use?
-> Create New
-```
-Select `fsdl-text-recognizer-project`.
+## Train LSTM model with CTC loss
 
-How to implement W&B in training code?
-
-Look at `training/run_experiment.py`.
-
-### Your first W&B experiment
-
-Run
-
-```
-tasks/train_character_predictor.sh
-```
-
-You should see:
-
-```
-wandb: Started W&B process version 0.6.17 with PID <xxxx>
-wandb: Syncing https://api.wandb.ai/<USERNAME>/fsdl-text-recognizer-project/runs/<xxxxxx>
-```
-
-Click the link to see your run train.
-
-## Running multiple experiments
-
-### Your second W&B experiment
-
-- Open up another terminal (click File->New->Terminal)
-- `cd fsdl-text-recognizer-project/lab4`
-- launch the same experiment, but with a bigger batch size
+You need to write code in `networks/line_lstm_ctc.py` to make training work.
+Training can be done via
 
 ```sh
-pipenv run python training/run_experiment.py --save '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "train_args": {"batch_size": 512}}' --gpu=1
+pipenv run python training/run_experiment.py --save '{"train_args": {"epochs": 16}, "dataset": "EmnistLinesDataset", "model": "LineModelCtc", "network": "line_lstm_ctc"}'
 ```
 
-Check out both runs at https://app.wandb.ai
+or the shortcut `tasks/train_lstm_line_predictor.sh`
 
-### Automatically running multiple experiments
+## Make sure the model is able to predict
 
-Desiderata for single-machine parallel experimentation code
-- Define multiple experiments and run them simultaneously on all available GPUs
-- Run more experiments than GPUs and automatically queue up extras
-
-Let's look at a simple implementation of these:
-- Look at `training/prepare_experiments.py`
-- Look at `training/gpu_manager.py`
-
-Let's check it out. Run 
-
-```
-tasks/prepare_sample_experiments.sh
-``` 
-
-or `pipenv run training/prepare_experiments.py training/experiments/sample.json`
-
-You should see the following:
-
-```
-pipenv run python training/run_experiment.py --gpu=-1 '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "network_args": {"num_layers": 2}, "train_args": {"batch_size": 256}, "experiment_group": "Sample Experiments 2"}'
-pipenv run python training/run_experiment.py --gpu=-1 '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "network_args": {"num_layers": 4}, "train_args": {"batch_size": 256}, "experiment_group": "Sample Experiments 2"}'
-pipenv run python training/run_experiment.py --gpu=-1 '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "lenet", "train_args": {"batch_size": 256}, "experiment_group": "Sample Experiments 2"}'
-```
-
-Each line corresponds to an experiment.
-
-Because of this behavior, we can run all these lines in parallel:
+You will also need to write some code in `models/line_model_ctc.py` to predict on images.
+After that, you should see tests pass when you run
 
 ```sh
-tasks/prepare_sample_experiments.sh | parallel -j2
+pipenv run pytest -s text_recognizer/tests/test_line_predictor.py
 ```
 
-This will run experiments two at a time, and as soon as one finishes, another one will start.
+Or you can do `tasks/run_prediction_tests.sh`, which will also run the CharacterModel tests.
 
-Although you can't see output in the terminal, you can confirm that the experiments are running by going to Weights and Biases.
+## Things to try
 
-## More cool things about W&B
-
-- `pipenv run wandb restore <run_id>` will check out the code and the best model
-- sample project showing cool plots: https://app.wandb.ai/wandb/face-emotion?view=default
+If you have time left over, or want to play around with this later on, you can try writing your own non-CTC `line_lstm` network (define it in `text_recognizer/networks/line_lstm.py`).
+For example, you could code up an encoder-decoder architecture with attention.
