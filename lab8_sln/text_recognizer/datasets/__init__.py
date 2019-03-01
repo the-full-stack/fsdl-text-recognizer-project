@@ -9,7 +9,7 @@ from .iam_lines import IamLinesDataset
 # Hide lines below until Lab 6
 from .iam_paragraphs import IamParagraphsDataset
 # Hide lines above until Lab 6
-# Hide lines below un til Lab 7
+# Hide lines below until Lab 7
 from .fsdl_handwriting import FsdlHandwritingDataset
 # Hide lines above until Lab 7
 
