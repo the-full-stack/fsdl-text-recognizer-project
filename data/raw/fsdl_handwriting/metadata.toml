@@ -1,0 +1,3 @@
+url = "https://dataturks.com/projects/sergeykarayev/fsdl_handwriting/export"  # Requires manual export
+filename = "fsdl_handwriting.json"
+sha256 = "e58637ba022df2d8e47716bd89079823bc83c8a4e9547f9c569583c5a5cced3a"
