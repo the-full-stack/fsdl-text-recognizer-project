@@ -1,4 +1,9 @@
-"""IamLinesDataset class."""
+"""
+IamLinesDataset class.
+
+We will use a processed version of this dataset, without including code that did the processing.
+We will look at how to generate processed data from raw IAM data in the IamParagraphsDataset.
+"""
 from urllib.request import urlretrieve
 
 from boltons.cacheutils import cachedproperty

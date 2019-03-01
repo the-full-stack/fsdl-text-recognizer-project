@@ -23,25 +23,20 @@ cd lab9_soln/
 Web backend
 
 ```
-text_recognizer/
-    api/                        # Code for serving predictions as a REST API.
-        tests/test_app.py           # Test that predictions are working
-        Dockerfile                  # Specificies Docker image that runs the web server.
-        __init__.py
-        app.py                      # Flask web server that serves predictions.
-        serverless.yml              # Specifies AWS Lambda deployment of the REST API.
+api/                        # Code for serving predictions as a REST API.
+    tests/test_app.py           # Test that predictions are working
+    Dockerfile                  # Specificies Docker image that runs the web server.
+    __init__.py
+    app.py                      # Flask web server that serves predictions.
+    serverless.yml              # Specifies AWS Lambda deployment of the REST API.
 ```
 
-Data (not under version control)
+Data (not under version control - one level up in the heirarchy)
 
 ```
-    data/                            # Training data lives here
-        raw/
-            emnist/metadata.toml     # Specifications for downloading data
-    experiments/                     # Experiment results live here
-        emnist_mlp/                  # Name of the experiment
-            models/              
-            logs/
+data/                            # Training data lives here
+    raw/
+        emnist/metadata.toml     # Specifications for downloading data
 ```
 
 Experimentation
@@ -81,6 +76,7 @@ Main model and training code
         __init__.py
 
         character_predictor.py      # Takes a raw image and obtains a prediction
+        line_predictor.py
 
         datasets/                   # Code for loading datasets
             __init__.py
@@ -105,31 +101,7 @@ Main model and training code
         weights/                            # Weights for production model
             CharacterModel_EmnistDataset_mlp_weights.h5
 
-        predict/
-            __init__.py
-            emnist_mlp.py
-
-        test/                       # Code that tests functionality of the other code
-            support/                    # Support files for the tests
-                emnist/
-                    a.png
-                    3.png
-            test_emnist_predict.py  # Lightweight test to ensure that the trained emnist_mlp correctly classifies a few data points
-
         util.py
-
-    tasks/                      # Scripts for running training, downloading data, etc.
-        # Training scripts
-        train_character_predictor.sh
-        # Deployment scripts
-        deploy_api_to_lambda.sh
-        build_api_docker.sh
-        prepare_sample_experiments.sh
-        # Tests
-        run_prediction_tests.sh
-        run_validation_tests.sh
-        test_api.sh
-        lint.sh
 
     training/                       # Code for running training experiments and selecting the best model.
         gpu_util_sampler.py
