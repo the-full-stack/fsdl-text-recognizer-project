@@ -1,10 +1,10 @@
 """Dataset class to be extended by dataset-specific classes."""
 from pathlib import Path
-from typing import Union
 from urllib.request import urlretrieve
 import argparse
-import hashlib
 import os
+
+from text_recognizer import util
 
 
 class Dataset:
@@ -23,15 +23,9 @@ def _download_raw_dataset(metadata):
     print('Downloading raw dataset...')
     urlretrieve(metadata['url'], metadata['filename'])  # nosec
     print('Computing SHA-256...')
-    sha256 = _compute_sha256(metadata['filename'])
+    sha256 = util.compute_sha256(metadata['filename'])
     if sha256 != metadata['sha256']:
         raise ValueError('Downloaded data file SHA-256 does not match that listed in metadata document.')
-
-
-def _compute_sha256(filename: Union[Path, str]):
-    """Return SHA256 checksum of a file."""
-    with open(filename, 'rb') as f:
-        return hashlib.sha256(f.read()).hexdigest()
 
 
 def _parse_args():

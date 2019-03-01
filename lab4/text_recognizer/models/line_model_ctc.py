@@ -108,7 +108,9 @@ def format_batch_ctc(batch_x, batch_y):
 
     label_lengths = []
     for ind in range(batch_size):
+        # Find all of the indices in the label that are blank
         empty_at = np.where(batch_y[ind, :, -1] == 1)[0]
+        # Length of the label is the pos of the first blank, or the max length
         if empty_at.shape[0] > 0:
             label_lengths.append(empty_at[0])
         else:

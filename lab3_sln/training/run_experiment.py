@@ -112,6 +112,12 @@ def _parse_args():
         type=str,
         help="Experimenet JSON ('{\"dataset\": \"EmnistDataset\", \"model\": \"CharacterModel\", \"network\": \"mlp\"}'"
     )
+    parser.add_argument(
+        "--nowandb",
+        default=False,
+        action='store_true',
+        help='If true, do not use wandb for this run'
+    )
     args = parser.parse_args()
     return args
 
@@ -120,10 +126,9 @@ def main():
     """Run experiment."""
     args = _parse_args()
 
-
     experiment_config = json.loads(args.experiment_config)
     os.environ["CUDA_VISIBLE_DEVICES"] = f'{args.gpu}'
-    run_experiment(experiment_config, args.save, args.gpu)
+    run_experiment(experiment_config, args.save, args.gpu, use_wandb=not args.nowandb)
 
 
 if __name__ == '__main__':

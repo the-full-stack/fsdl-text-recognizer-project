@@ -8,11 +8,13 @@ boltons = "*"
 editdistance = "*"
 flask = "*"
 h5py = "*"
+ipdb = "*"
 numpy = "*"
 opencv-python-headless = "*"
 requests = "*"
 tensorflow-gpu = ">=1.12,<1.13"
 toml = "*"
+tqdm = "*"
 
 [dev-packages]
 bandit = "*"
