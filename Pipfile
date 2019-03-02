@@ -12,7 +12,7 @@ ipdb = "*"
 numpy = "*"
 opencv-python-headless = "*"
 requests = "*"
-tensorflow = ">=1.12,<1.13"
+tensorflow-gpu = ">=1.11,<1.12"
 toml = "*"
 tqdm = "*"
 
