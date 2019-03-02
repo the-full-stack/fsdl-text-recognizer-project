@@ -1,6 +1,5 @@
 """Dataset class to be extended by dataset-specific classes."""
 from pathlib import Path
-from urllib.request import urlretrieve
 import argparse
 import os
 

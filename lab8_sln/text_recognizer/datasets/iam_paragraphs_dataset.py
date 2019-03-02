@@ -1,4 +1,5 @@
 """IamParagraphsDataset class and functions for data processing."""
+from boltons.cacheutils import cachedproperty
 from tensorflow.keras.utils import to_categorical
 import cv2
 import numpy as np
@@ -14,8 +15,6 @@ PROCESSED_DATA_DIRNAME = Dataset.data_dirname() / 'processed' / 'iam_paragraphs'
 CROPS_DIRNAME = PROCESSED_DATA_DIRNAME / 'crops'
 GT_DIRNAME = PROCESSED_DATA_DIRNAME / 'gt'
 
-# On top of IAM forms being downsampled, we will downsample the paragraph crops once more, to make convnets tractable.
-DOWNSAMPLE_FACTOR = 2
 PARAGRAPH_BUFFER = 50  # pixels in the IAM form images to leave around the lines
 TEST_FRACTION = 0.2
 
@@ -29,8 +28,8 @@ class IamParagraphsDataset(Dataset):
         self.iam_dataset.load_or_generate_data()
 
         self.num_classes = 3
-        self.input_shape = (512, 512)
-        self.output_shape = (512, 512, self.num_classes)
+        self.input_shape = (256, 256)
+        self.output_shape = (256, 256, self.num_classes)
 
         self.subsample_fraction = subsample_fraction
         self.ids = None
@@ -49,27 +48,27 @@ class IamParagraphsDataset(Dataset):
         self.train_ind, self.test_ind = _get_random_split(self.x.shape[0])
         self._subsample()
 
-    @property
+    @cachedproperty
     def x_train(self):
         return self.x[self.train_ind]
 
-    @property
+    @cachedproperty
     def y_train(self):
         return self.y[self.train_ind]
 
-    @property
+    @cachedproperty
     def x_test(self):
         return self.x[self.test_ind]
 
-    @property
+    @cachedproperty
     def y_test(self):
-        return self.x[self.test_ind]
+        return self.y[self.test_ind]
 
-    @property
+    @cachedproperty
     def ids_train(self):
         return self.ids[self.train_ind]
 
-    @property
+    @cachedproperty
     def ids_test(self):
         return self.ids[self.test_ind]
 
@@ -80,8 +79,8 @@ class IamParagraphsDataset(Dataset):
     def _process_iam_paragraphs(self):
         """
         For each page, crop out the part of it that correspond to the paragraph of text, and make sure all crops are
-        512x512. The ground truth data is the same size, with a one-hot vector at each pixel corresponding to labels
-        0=background, 1=odd-numbered line, 2=even-numbered line
+        self.input_shape. The ground truth data is the same size, with a one-hot vector at each pixel
+        corresponding to labels 0=background, 1=odd-numbered line, 2=even-numbered line
         """
         crop_dims = self._decide_on_crop_dims()
         CROPS_DIRNAME.mkdir(parents=True, exist_ok=True)
@@ -179,10 +178,10 @@ def _crop_paragraph_image(filename, line_regions, crop_dims, final_dims):
             color,
             3
         )
-    image_crop_for_debug = cv2.resize(image_crop_for_debug, final_dims, interpolation=cv2.INTER_CUBIC)
+    image_crop_for_debug = cv2.resize(image_crop_for_debug, final_dims, interpolation=cv2.INTER_AREA)
     util.write_image(image_crop_for_debug, DEBUG_CROPS_DIRNAME / f'{filename.stem}.jpg')
 
-    image_crop = cv2.resize(image_crop, final_dims, interpolation=cv2.INTER_CUBIC)  # Quality interpolation for input
+    image_crop = cv2.resize(image_crop, final_dims, interpolation=cv2.INTER_AREA)  # Quality interpolation for input
     util.write_image(image_crop, CROPS_DIRNAME / f'{filename.stem}.jpg')
 
     gt_image = cv2.resize(gt_image, final_dims, interpolation=cv2.INTER_NEAREST)  # No interpolation for labels
@@ -197,15 +196,16 @@ def _load_iam_paragraphs():
     for filename in CROPS_DIRNAME.glob('*.jpg'):
         id_ = filename.stem
         image = util.read_image(filename, grayscale=True)
+        image = 1. - image / 255
 
         gt_filename = GT_DIRNAME / f'{id_}.png'
         gt_image = util.read_image(gt_filename, grayscale=True)
 
-        images.append(image / 255)
+        images.append(image)
         gt_images.append(gt_image)
         ids.append(id_)
     images = np.array(images).astype(np.float32)
-    gt_images = to_categorical(np.array(gt_images), 3)
+    gt_images = to_categorical(np.array(gt_images), 3).astype(np.uint8)
     return images, gt_images, np.array(ids)
 
 

@@ -46,7 +46,7 @@ def train_model(
     model.network.summary()
 
     t = time()
-    _history = model.fit(dataset, batch_size, epochs, callbacks)
+    _history = model.fit(dataset=dataset, batch_size=batch_size, epochs=epochs, callbacks=callbacks)
     print('Training took {:2f} s'.format(time() - t))
 
     if GPU_UTIL_SAMPLER and gpu_ind is not None:

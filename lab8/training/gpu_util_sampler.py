@@ -14,7 +14,7 @@ class GPUUtilizationSampler(Callback):
     def __init__(self, gpu_ind):
         self.gpu_ind = gpu_ind
         self.samples = []
-        super()
+        super().__init__()
 
     def on_train_begin(self, logs=None):
         if logs is None:

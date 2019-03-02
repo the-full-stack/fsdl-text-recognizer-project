@@ -21,7 +21,7 @@ cd lab3_soln/
 - Synthetic dataset we built for this project
 - Sample sentences from Brown corpus
 - For each character, sample random EMNIST character and place on a line (with some random overlap)
-- Look at: notebooks/02-look-at-emnist-lines.ipynb
+- Look at: `notebooks/02-look-at-emnist-lines.ipynb`
 
 ## Overview of model and loss
 
@@ -31,7 +31,7 @@ cd lab3_soln/
 
 ## Train LSTM model with CTC loss
 
-Let's train an LSTM model with CTC loss. 
+Let's train an LSTM model with CTC loss.
 
 ```sh
 pipenv run python training/run_experiment.py --save '{"train_args": {"epochs": 16}, "dataset": "EmnistLinesDataset", "model": "LineModelCtc", "network": "line_lstm_ctc"}'

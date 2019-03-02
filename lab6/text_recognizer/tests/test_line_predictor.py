@@ -46,7 +46,7 @@ class TestEmnistLinePredictorVariableImageWidth(unittest.TestCase):
 
 # Hide lines below until Lab 5
 class TestIamLinePredictor(unittest.TestCase):
-    def test_filename(self):
+    def test_filename(self):  # pylint: disable=R0201
         predictor = LinePredictor(IamLinesDataset)
 
         for filename in (SUPPORT_DIRNAME / 'iam_lines').glob('*.png'):

@@ -3,6 +3,12 @@ import numpy as np
 from tensorflow.keras.utils import Sequence
 
 
+def _shuffle(x, y):
+    """Shuffle x and y maintaining their association."""
+    shuffled_indices = np.random.permutation(x.shape[0])
+    return x[shuffled_indices], y[shuffled_indices]
+
+
 class DatasetSequence(Sequence):
     """
     Minimal implementation of https://keras.io/utils/#sequence.
@@ -41,4 +47,8 @@ class DatasetSequence(Sequence):
             batch_x, batch_y = self.format_fn(batch_x, batch_y)
 
         return batch_x, batch_y
+
+    def on_epoch_end(self) -> None:
+        """Shuffle data."""
+        self.x, self.y = _shuffle(self.x, self.y)
 
