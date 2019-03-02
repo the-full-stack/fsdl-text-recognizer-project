@@ -35,7 +35,7 @@ pipenv run python training/run_experiment.py --save '{"dataset": "IamLinesDatase
 
 This uses our LSTM with CTC model. 8 epochs gets accuracy of 40% and takes about 10 minutes.
 
-Training longer will keep improving: the same settings get to 60% accuracy in 40 epochs. 
+Training longer will keep improving: the same settings get to 60% accuracy in 40 epochs.
 
 ## Ideas for things to try
 
@@ -54,4 +54,6 @@ If you commit and push your code changes, then the run will also be linked to th
 - Stack a few layers of LSTMs
 - Try to get an all-conv approach to work for faster training
 - Add BatchNormalization
+- Play around with learning rate. In order to launch experiments with different learning rates, you will have to implement something in `training/run_experiment.py` and `text_recognizer/datasets/base.py`
+- Train on EmnistLines and fine-tune on IamLines. In order to do that, you might want to implement a model wrapper class that can take multiple datasets.
 - Come up with your own!
