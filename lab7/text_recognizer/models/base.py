@@ -5,7 +5,7 @@ from typing import Callable, Dict, Optional
 from tensorflow.keras.optimizers import RMSprop
 import numpy as np
 
-from text_recognizer.datasets.sequence import DatasetSequence
+from text_recognizer.datasets.dataset_sequence import DatasetSequence
 
 
 DIRNAME = Path(__file__).parents[1].resolve() / 'weights'

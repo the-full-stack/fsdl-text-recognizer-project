@@ -4,7 +4,7 @@ from typing import Callable, Dict, Tuple
 import numpy as np
 
 from text_recognizer.models.base import Model
-from text_recognizer.datasets.emnist import EmnistDataset
+from text_recognizer.datasets.emnist_dataset import EmnistDataset
 from text_recognizer.networks.mlp import mlp
 
 

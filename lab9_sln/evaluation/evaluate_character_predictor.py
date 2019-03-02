@@ -2,7 +2,7 @@ from pathlib import Path
 from time import time
 import unittest
 
-from text_recognizer.datasets.emnist import EmnistDataset
+from text_recognizer.datasets import EmnistDataset
 from text_recognizer.character_predictor import CharacterPredictor
 
 

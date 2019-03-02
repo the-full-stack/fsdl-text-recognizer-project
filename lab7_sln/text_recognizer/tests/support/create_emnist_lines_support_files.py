@@ -3,7 +3,7 @@ import shutil
 
 import numpy as np
 
-from text_recognizer.datasets.emnist_lines import EmnistLinesDataset
+from text_recognizer.datasets import EmnistLinesDataset
 import text_recognizer.util as util
 
 

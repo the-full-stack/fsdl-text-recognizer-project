@@ -44,7 +44,7 @@ Experimentation
 ```
     evaluation/                     # Scripts for evaluating model on eval set.
         evaluate_character_predictor.py
-        
+
     notebooks/                  # For snapshots of initial exploration, before solidfying code as proper Python files.
         01-look-at-emnist.ipynb
 ```
@@ -80,10 +80,10 @@ Main model and training code
 
         datasets/                   # Code for loading datasets
             __init__.py
-            base.py                 # Base class for models - logic for downloading data
-            emnist.py
+            dataset.py              # Base class for datasets - logic for downloading data
+            emnist_dataset.py
             emnist_essentials.json
-            sequence.py 
+            dataset_sequence.py
 
         models/                     # Code for instantiating models, including data preprocessing and loss functions
             __init__.py

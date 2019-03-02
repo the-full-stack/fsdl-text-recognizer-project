@@ -9,7 +9,7 @@ import wandb
 from wandb.keras import WandbCallback
 # Hide lines above until Lab 4
 
-from text_recognizer.datasets.base import Dataset
+from text_recognizer.datasets.dataset import Dataset
 from text_recognizer.models.base import Model
 from training.gpu_util_sampler import GPUUtilizationSampler
 

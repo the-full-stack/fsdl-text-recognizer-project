@@ -4,8 +4,8 @@ from typing import Callable, Dict, Tuple
 import editdistance
 import numpy as np
 
-from text_recognizer.datasets.emnist_lines import EmnistLinesDataset
-from text_recognizer.datasets.sequence import DatasetSequence
+from text_recognizer.datasets.emnist_lines_dataset import EmnistLinesDataset
+from text_recognizer.datasets.dataset_sequence import DatasetSequence
 from text_recognizer.models.base import Model
 from text_recognizer.networks import line_cnn_all_conv
 
