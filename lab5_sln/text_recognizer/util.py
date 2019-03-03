@@ -70,7 +70,7 @@ class TqdmUpTo(tqdm):
             Total size (in tqdm units). If [default: None] remains unchanged.
         """
         if tsize is not None:
-            self.total = tsize
+            self.total = tsize  # pylint: disable=attribute-defined-outside-init
         self.update(blocks * bsize - self.n)  # will also set self.n = b * bsize
 
 

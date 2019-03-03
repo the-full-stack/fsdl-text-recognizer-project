@@ -11,7 +11,7 @@ echo "pylint"
 pipenv run pylint --ignore=.serverless api text_recognizer training || FAILURE=true
 
 echo "pycodestyle"
-pipenv run pycodestyle --exclude=node_modules,.serverless api text_recognizer training || FAILURE=true
+pipenv run pycodestyle --exclude=node_modules,.serverless,.ipynb_checkpoints api text_recognizer training || FAILURE=true
 
 echo "mypy"
 pipenv run mypy api text_recognizer training || FAILURE=true
