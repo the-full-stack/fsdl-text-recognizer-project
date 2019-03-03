@@ -48,7 +48,14 @@ jobs:
             - ~/.local
 
       - run:
+          name: run linting
+          when: always
+          command: |
+            PYTHONPATH=. ./tasks/lint.sh
+
+      - run:
           name: run prediction tests
+          when: always
           command: |
             cd lab8 && PYTHONPATH=. pipenv run pytest -s text_recognizer/tests/*
 

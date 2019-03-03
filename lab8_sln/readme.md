@@ -21,6 +21,10 @@ Running `tasks/lint.sh` fully lints our codebase with a few different checkers:
 
 A note: in writing Bash scripts, I often refer to [this excellent guide](http://redsymbol.net/articles/unofficial-bash-strict-mode/).
 
+Note that the linters are configured using `.pylintrc` and `setup.cfg` files, as well as flags specified in `lint.sh`.
+
+Getting linting right will pay off in no time, and is a must for any multi-developer codebase.
+
 ## Setting up CircleCI
 
 The relevant new files for setting up continuous integration are

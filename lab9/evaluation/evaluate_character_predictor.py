@@ -1,3 +1,5 @@
+"""Run validation test for CharacterPredictor."""
+import os
 from pathlib import Path
 from time import time
 import unittest
@@ -5,6 +7,7 @@ import unittest
 from text_recognizer.datasets import EmnistDataset
 from text_recognizer.character_predictor import CharacterPredictor
 
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 SUPPORT_DIRNAME = Path(__file__).parents[0].resolve() / 'support' / 'emnist'
 
