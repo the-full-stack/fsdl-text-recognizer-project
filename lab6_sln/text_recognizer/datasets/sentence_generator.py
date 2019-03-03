@@ -60,4 +60,3 @@ def load_nltk_brown_corpus():
         NLTK_DATA_DIRNAME.mkdir(parents=True, exist_ok=True)
         nltk.download('brown', download_dir=NLTK_DATA_DIRNAME)
     return nltk.corpus.brown.sents()
-

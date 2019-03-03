@@ -48,4 +48,3 @@ class GPUManager:
             if self.verbose:
                 print(f'pid {os.getpid()} couldnt get lock')
         return None
-

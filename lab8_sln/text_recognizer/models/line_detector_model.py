@@ -71,4 +71,3 @@ class LineDetectorModel(Model):
                  verbose: bool = False) -> float:  # pylint: disable=unused-argument
         """Evaluates the network on x, y on returns the loss."""
         return self.network.evaluate(x, y, batch_size=batch_size)
-

@@ -29,4 +29,3 @@ class TestIntegrations(TestCase):
         json_data = response.get_json()
         self.assertEqual(json_data['pred'], 'or if used the results')
         # self.assertEqual(json_data['pred'], 'and came into the livingroom, where')
-

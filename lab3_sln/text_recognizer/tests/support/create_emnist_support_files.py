@@ -6,7 +6,6 @@ import numpy as np
 from text_recognizer.datasets import EmnistDataset
 import text_recognizer.util as util
 
-
 SUPPORT_DIRNAME = Path(__file__).parents[0].resolve() / 'emnist'
 
 
@@ -26,4 +25,3 @@ def create_emnist_support_files():
 
 if __name__ == '__main__':
     create_emnist_support_files()
-

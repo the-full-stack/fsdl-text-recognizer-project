@@ -41,4 +41,3 @@ class TestEmnistLinePredictorVariableImageWidth(unittest.TestCase):
             self.assertLess(edit_distance, 0.2)
 
 
-

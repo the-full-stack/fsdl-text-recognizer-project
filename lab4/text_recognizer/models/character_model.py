@@ -28,4 +28,3 @@ class CharacterModel(Model):
         predicted_character = self.data.mapping[ind]
         # Your code above (Lab 1)
         return predicted_character, confidence_of_prediction
-

@@ -3,7 +3,6 @@ from concurrent.futures import as_completed, ThreadPoolExecutor
 from pathlib import Path
 from typing import Union
 from urllib.request import urlopen, urlretrieve
-import base64
 import hashlib
 import os
 
@@ -39,6 +38,7 @@ def read_image(image_uri: Union[Path, str], grayscale=False) -> np.array:
 # Hide lines below until Lab 9
 def read_b64_image(b64_string, grayscale=False):
     """Load base64-encoded images."""
+    import base64
     imread_flag = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
     try:
         _, b64_data = b64_string.split(',')
@@ -78,6 +78,5 @@ def download_url(url, filename):
     """Download a file from url to filename, with a progress bar."""
     with TqdmUpTo(unit='B', unit_scale=True, unit_divisor=1024, miniters=1) as t:
         urlretrieve(url, filename, reporthook=t.update_to, data=None)  # nosec
-
 
 

@@ -55,4 +55,3 @@ def line_cnn_all_conv(
     model.add(Lambda(lambda x: x[:, :output_length, :]))
 
     return model
-

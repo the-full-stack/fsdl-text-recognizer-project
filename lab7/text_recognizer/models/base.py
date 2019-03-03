@@ -87,4 +87,3 @@ class Model:
 
     def save_weights(self):
         self.network.save_weights(self.weights_filename)
-

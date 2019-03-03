@@ -56,4 +56,3 @@ def line_lstm_ctc(input_shape, output_shape, window_width=28, window_stride=14):
         outputs=[ctc_loss_output, ctc_decoded_output]
     )
     return model
-

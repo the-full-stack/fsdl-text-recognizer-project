@@ -59,4 +59,3 @@ class TestIamLinePredictor(unittest.TestCase):
             print(f'Pred: "{pred}" | Confidence: {conf} | True: {true} | Edit distance: {edit_distance}')
             # self.assertLess(edit_distance, 0.2)
 # Hide lines above until Lab 5
-

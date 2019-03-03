@@ -24,4 +24,3 @@ class CharacterPredictor:
     def evaluate(self, dataset):
         """Evaluate on a dataset."""
         return self.model.evaluate(dataset.x_test, dataset.y_test)
-

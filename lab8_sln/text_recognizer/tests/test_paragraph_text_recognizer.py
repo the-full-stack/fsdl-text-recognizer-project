@@ -22,6 +22,4 @@ class TestParagraphTextRecognizer(unittest.TestCase):
             full_image = util.read_image(str(filename), grayscale=True)
             predicted_text, line_region_crops = predictor.predict(full_image)
             print(predicted_text)
-            # Sample predicted_text: "d M0VE to stop Mr. Gaitskell Aron woninating any mone habour life Peers is to be made at a meetig af Labaur M Ps toorrow. Ir. Mclael Foot kas put dou a vesoltion on the sujech ond he is to ee bached by Mr. Will Griftiths, MP for Nancheder Eroange."  # pylint: disable=line-too-long
             assert len(line_region_crops) == num_text_lines_by_name[filename.stem]
-

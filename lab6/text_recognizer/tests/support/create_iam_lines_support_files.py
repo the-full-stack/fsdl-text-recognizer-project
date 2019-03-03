@@ -29,4 +29,3 @@ def create_iam_lines_support_files():
 
 if __name__ == '__main__':
     create_iam_lines_support_files()
-

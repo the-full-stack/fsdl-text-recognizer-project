@@ -51,4 +51,3 @@ class DatasetSequence(Sequence):
     def on_epoch_end(self) -> None:
         """Shuffle data."""
         self.x, self.y = _shuffle(self.x, self.y)
-

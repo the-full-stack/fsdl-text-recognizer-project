@@ -13,4 +13,3 @@ def slide_window(image, window_width, window_stride):
     patches = tf.transpose(patches, (0, 2, 1, 3))
     patches = tf.expand_dims(patches, -1)
     return patches
-

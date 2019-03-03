@@ -44,4 +44,3 @@ def fcn(_input_shape: Tuple[int, ...], output_shape: Tuple[int, ...]) -> Model:
 
     model = Model(inputs=input_image, outputs=output)
     return model
-

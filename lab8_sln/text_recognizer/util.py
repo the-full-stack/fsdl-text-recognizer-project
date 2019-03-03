@@ -3,7 +3,6 @@ from concurrent.futures import as_completed, ThreadPoolExecutor
 from pathlib import Path
 from typing import Union
 from urllib.request import urlopen, urlretrieve
-import base64
 import hashlib
 import os
 
@@ -80,4 +79,3 @@ def download_urls(urls, filenames):
             except Exception as e:
                 print('Error', e)
 # Hide lines above until Lab 7
-

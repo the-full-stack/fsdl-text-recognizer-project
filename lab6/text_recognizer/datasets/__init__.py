@@ -9,4 +9,3 @@ from .iam_lines_dataset import IamLinesDataset
 from .iam_dataset import IamDataset
 from .iam_paragraphs_dataset import IamParagraphsDataset
 # Hide lines above until Lab 6
-

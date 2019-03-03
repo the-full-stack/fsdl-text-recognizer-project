@@ -36,4 +36,3 @@ def create_emnist_lines_support_files():
 
 if __name__ == '__main__':
     create_emnist_lines_support_files()
-

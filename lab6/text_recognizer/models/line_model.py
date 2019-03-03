@@ -56,4 +56,3 @@ class LineModel(Model):
         pred = ''.join(self.data.mapping[label] for label in np.argmax(pred_raw, axis=-1).flatten()).strip()
         conf = np.min(np.max(pred_raw, axis=-1))  # The least confident of the predictions.
         return pred, conf
-

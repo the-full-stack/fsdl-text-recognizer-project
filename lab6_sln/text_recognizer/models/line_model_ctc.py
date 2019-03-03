@@ -127,4 +127,3 @@ def format_batch_ctc(batch_x, batch_y):
         'ctc_decoded': y_true
     }
     return batch_inputs, batch_outputs
-

@@ -41,4 +41,3 @@ def ctc_decode(y_pred, input_length, max_output_length):
         return decoded_dense
 
     return tf.cond(tf.less(cols, max_length), pad, noop)
-

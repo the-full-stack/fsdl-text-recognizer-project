@@ -31,4 +31,3 @@ class GPUUtilizationSampler(Callback):
                 self.samples.append(gpu_info.utilization)
             except Exception:
                 self.samples.append(0)
-

@@ -27,4 +27,3 @@ def mlp(input_shape: Tuple[int, ...],
     # Your code above (Lab 1)
 
     return model
-
