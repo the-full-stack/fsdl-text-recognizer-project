@@ -1,10 +1,12 @@
 """Tests for web app."""
+import os
 from pathlib import Path
 from unittest import TestCase
 import base64
 
 from api.app import app
 
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 REPO_DIRNAME = Path(__file__).parents[2].resolve()
 # SUPPORT_DIRNAME = REPO_DIRNAME / 'text_recognizer' / 'tests' / 'support' / 'iam_lines'

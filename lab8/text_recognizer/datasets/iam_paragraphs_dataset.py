@@ -3,7 +3,6 @@ from boltons.cacheutils import cachedproperty
 from tensorflow.keras.utils import to_categorical
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
 
 from text_recognizer.datasets.dataset import Dataset, _parse_args
 from text_recognizer.datasets.iam_dataset import IamDataset
@@ -167,6 +166,7 @@ def _crop_paragraph_image(filename, line_regions, crop_dims, final_dims):
         ] = ind % 2 + 1
 
     # Generate image for debugging
+    import matplotlib.pyplot as plt
     cmap = plt.get_cmap('Set1')
     image_crop_for_debug = np.dstack([image_crop, image_crop, image_crop])
     for ind, region in enumerate(line_regions):
