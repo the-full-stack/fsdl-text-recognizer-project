@@ -6,14 +6,19 @@ Our next task is to automatically detect line regions in an image of a whole par
 Our approach will be to train a model that, when given an image containing lines of text, returns a pixelwise labeling of that image, with each pixel belonging to either background, odd line of handwriting, or even line of handwriting.
 Given the output of the model, we can find line regions with an easy image processing operation.
 
-Why the distinction between odd and even lines?
-Because adjacent line regions can overlap, and if we don't make this distinction, then we will not be able to know whether a given region is one or multiple lines.
+## Setup
+
+- As always, `git pull` in the `~/fsdl-text-recognizer-project` repo to get the latest code.
+- Do a quick `pipenv sync --dev` to make sure your package versions are correct.
+- Then `cd lab6_sln`.
 
 ## Data
 
 We are starting from the IAM dataset, which includes not only lines but the original writing sample forms, with each line and word region annotated.
 
-Let's look at the raw data in the file browser.
+Let's load the IAM dataset and then look at the data files.
+Run `pipenv run python text_recognizer/datasets/iam.py`
+Let's look at the raw data files, which are in `~/fsdl-text-recognizer-project/data/raw/iam/iamdb/forms`.
 
 We want to crop out the region of each page corresponding to the handwritten paragraph as our model input, and generate corresponding ground truth.
 
@@ -43,11 +48,21 @@ Unlike the original FCN, however, we do not maxpool or upsample, but instead rel
 
 The crucial thing to understand is that because we are labeling odd and even lines differently, each predicted pixel must have the context of the entire image to correctly label -- otherwise, there is no way to know whether the pixel is on an odd or even line.
 
-## Review training results
+## Review results
+
+The model converges to something really good.
+
+Check out `notebooks/04b-look-at-line-detector-predictions.ipynb` to see sample predictions on the test set.
+
+We also plot some sample training data augmentation in that notebook.
 
 ## Combining the two models
 
-Now we are ready to combine the new `LineDetector` model and the
+Now we are ready to combine the new `LineDetector` model and the `LinePredictor` model that we trained yesterday.
+
+This is done in `text_recognizer/paragraph_text_recognizer.py`, which loads both models, find line regions with one, and runs each crop through the other.
+
+We can see that it works as expected (albeit not too accurately yet) by running `pipenv run pytest -s text_recognizer/tests/test_paragraph_text_recognizer.py`.
 
 ## Things to try
 

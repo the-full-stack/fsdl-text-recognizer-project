@@ -7,14 +7,6 @@ In this lab, we will
 - Add evaluation tests
 - Add linting to our codebase
 - Set up continuous integration via CircleCI, and see our commits pass/fail
-- Run our LinePredictor as a web app, and send it some requests
-- Dockerize our web app
-- Deploy our web app as a serverless function to AWS Lambda
-- Look at basic metrics and set up a more advanced one
-- Experience something going wrong in our deployed service, and catching it with metrics
-
-This lab has quite a few new files.
-We'll go through them in order.
 
 ## Linting script
 

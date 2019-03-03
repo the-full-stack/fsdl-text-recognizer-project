@@ -6,7 +6,7 @@ In this lab we will annotate the handwriting samples we collected, export and ve
 
 We will be using a simple online data annotation web service called Dataturks.
 
-Please head to the [project page](https://dataturks.com/projects/sergeykarayev/fsdl_handwriting) and log in using your Github credentials.
+Please head to the [project page](https://dataturks.com/projects/sergeykarayev/fsdl_handwriting) and log in using our shared credential: `annotator@fullstackdeeplearning.com` (the password will be shared during lab).
 
 You should be able to start tagging now.
 Let's do it together for a little bit, and then you'll have time to do a full page by yourself.
@@ -49,9 +49,9 @@ We use the `concurrent.futures.ThreadPoolExecutor` method, and use the `tqdm` pa
 
 We can confirm that we loaded the data correctly by looking at line crops and their corresponding strings.
 
-Check out `notebooks/05-look-at-fsdl-handwriting.ipynb`.
+Make sure you are in `lab7_sln` directory, and take a look at `notebooks/05-look-at-fsdl-handwriting.ipynb`.
 
 ## Training on the new dataset
 
 We're not going to have time to train on the new dataset, but that is something that is now possible.
-As an exercise, you should write `FsdlHandwritingLinesDataset` and `FsdlHandwritingParagraphsDataset`, and be able to train a model on a combination of IAM and FSDL Handwriting data on both the line detection and line text prediction tasks.
+As an exercise, you could write `FsdlHandwritingLinesDataset` and `FsdlHandwritingParagraphsDataset`, and be able to train a model on a combination of IAM and FSDL Handwriting data on both the line detection and line text prediction tasks.

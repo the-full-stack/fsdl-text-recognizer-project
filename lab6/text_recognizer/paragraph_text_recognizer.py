@@ -28,39 +28,43 @@ class ParagraphTextRecognizer:
         else:
             image = image_or_filename
 
-        square_image = _crop_out_square_image(image)
-
-        line_region_crops = self._get_line_region_crops(square_image=square_image)
+        line_region_crops = self._get_line_region_crops(image=image)
         print([a.shape for a in line_region_crops])
-        line_region_crops = [self._prepare_image_for_line_predictor_model(image=crop) for crop in line_region_crops]
+        prepared_line_region_crops = [
+            self._prepare_image_for_line_predictor_model(image=crop)
+            for crop in line_region_crops
+        ]
 
-        line_region_strings = [self.line_predictor_model.predict_on_image(crop)[0] for crop in line_region_crops]
+        line_region_strings = [
+            self.line_predictor_model.predict_on_image(crop)[0]
+            for crop in prepared_line_region_crops
+        ]
         return ' '.join(line_region_strings), line_region_crops
 
-    def _get_line_region_crops(self, square_image: np.ndarray, min_crop_len_factor: float = 0.02) -> List[np.ndarray]:
+    def _get_line_region_crops(self, image: np.ndarray, min_crop_len_factor: float = 0.02) -> List[np.ndarray]:
         """Find all the line regions in square image and crop them out and return them."""
-        image, scale_down_factor = self._prepare_image_for_line_detector_model(square_image)
-        line_segmentation = self.line_detector_model.predict_on_image(image)
-        bounding_boxes_wyxh = _find_line_bounding_boxes(line_segmentation)
+        prepared_image, scale_down_factor = self._prepare_image_for_line_detector_model(image)
+        line_segmentation = self.line_detector_model.predict_on_image(prepared_image)
+        bounding_boxes_xywh = _find_line_bounding_boxes(line_segmentation)
 
-        bounding_boxes_wyxh = (bounding_boxes_wyxh * scale_down_factor).astype(int)
+        bounding_boxes_xywh = (bounding_boxes_xywh * scale_down_factor).astype(int)
 
-        min_crop_length = int(min_crop_len_factor * square_image.shape[0])
+        min_crop_length = int(min_crop_len_factor * min(image.shape[0], image.shape[1]))
         line_region_crops = [
-            square_image[y:y+h, x:x+w]
-            for x, y, w, h in bounding_boxes_wyxh
+            image[y:y+h, x:x+w]
+            for x, y, w, h in bounding_boxes_xywh
             if w >= min_crop_length and h >= min_crop_length
         ]
         return line_region_crops
 
-    def _prepare_image_for_line_detector_model(self, square_image: np.ndarray) -> Tuple[np.ndarray, float]:
+    def _prepare_image_for_line_detector_model(self, image: np.ndarray) -> Tuple[np.ndarray, float]:
         """Convert uint8 image to float image with black background with shape self.line_detector_model.image_shape."""
-        image, scale_down_factor = _resize_image_for_line_detector_model(
-            image=square_image,
-            expected_shape=self.line_detector_model.image_shape
+        resized_image, scale_down_factor = _resize_image_for_line_detector_model(
+            image=image,
+            max_shape=self.line_detector_model.image_shape
         )
-        image = (1. - image / 255).astype('float32')
-        return image, scale_down_factor
+        resized_image = (1. - resized_image / 255).astype('float32')
+        return resized_image, scale_down_factor
 
     def _prepare_image_for_line_predictor_model(self, image: np.ndarray) -> np.ndarray:
         """
@@ -94,29 +98,15 @@ def _find_line_bounding_boxes(line_segmentation: np.ndarray):
     return bboxes_xywh[np.argsort(bboxes_xywh[:, 1])]
 
 
-def _crop_out_square_image(image: np.ndarray) -> np.ndarray:
-    """Crop out the largest square from the image at the center."""
-    if image.shape[0] == image.shape[1]:
-        return image.copy()
-    image_shape = np.array(image.shape)
-    crop_len = image_shape.min()
-    crop_axis = image_shape.argmax()
-    if crop_axis == 0:
-        y1, y2 = image_shape[crop_axis] // 2 - crop_len // 2, image_shape[crop_axis] // 2 + crop_len // 2
-        x1, x2 = 0, image_shape[1]
-    else:
-        x1, x2 = image_shape[crop_axis] // 2 - crop_len // 2, image_shape[crop_axis] // 2 + crop_len // 2
-        y1, y2 = 0, image_shape[0]
-
-    return image[y1:y2, x1:x2]
-
-
-def _resize_image_for_line_detector_model(image: np.ndarray,
-                                          expected_shape: Tuple[int, int]) -> Tuple[np.ndarray, float]:
-    """If the image is of expected_shape shape, then crop the center, and resize it to the expected_shape."""
-    assert image.shape[0] == image.shape[1]
-    if image.shape == expected_shape:
-        return image.copy(), 1.
-    scale_down_factor = image.shape[0] / expected_shape[0]
-    return cv2.resize(image, dsize=expected_shape, interpolation=cv2.INTER_AREA), scale_down_factor
+def _resize_image_for_line_detector_model(image: np.ndarray, max_shape: Tuple[int, int]) -> Tuple[np.ndarray, float]:
+    """Resize the image to less than the max_shape while maintaining aspect ratio."""
+    scale_down_factor = max(np.array(image.shape) / np.array(max_shape))
+    if scale_down_factor == 1:
+        return image.copy(), scale_down_factor
+    resized_image = cv2.resize(image,
+                               dsize=None,
+                               fx=1/scale_down_factor,
+                               fy=1/scale_down_factor,
+                               interpolation=cv2.INTER_AREA)
+    return resized_image, scale_down_factor
 

@@ -1,7 +1,8 @@
 """Keras network code for the fully-convolutional network used for line detection."""
 from typing import List, Tuple
 from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Activation, Add, Conv2D, Input, Layer, Reshape
+from tensorflow.keras.layers import Activation, Add, Conv2D, Input, Lambda, Layer
+from tensorflow.keras import backend as K
 
 
 def residual_conv_block(input_layer: Layer,
@@ -23,15 +24,15 @@ def residual_conv_block(input_layer: Layer,
     return x
 
 
-def fcn(input_shape: Tuple[int, ...], output_shape: Tuple[int, ...]) -> Model:
+def fcn(_input_shape: Tuple[int, ...], output_shape: Tuple[int, ...]) -> Model:
     """Function to instantiate a fully convolutional residual network for line detection."""
     num_filters = [16] * 14
     kernel_sizes = [7] * 14
-    dilation_rates = [3] * 4 + [5] * 2 + [7] * 8
+    dilation_rates = [3] * 4 + [7] * 10
 
     num_classes = output_shape[-1]
-    input_image = Input(input_shape)
-    model_layer = Reshape(input_shape + (1, ))(input_image)
+    input_image = Input((None, None))
+    model_layer = Lambda(lambda x: K.expand_dims(x, axis=-1))(input_image)
 
     for i in range(0, len(num_filters), 2):
         model_layer = residual_conv_block(input_layer=model_layer,

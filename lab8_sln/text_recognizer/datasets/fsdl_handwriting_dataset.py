@@ -28,7 +28,7 @@ class FsdlHandwritingDataset(Dataset):
         }
 
     def load_or_generate_data(self):
-        if not self.page_filenames:
+        if len(self.page_filenames) < len(self.data_by_page_id):
             self._download_pages()
 
     @property
