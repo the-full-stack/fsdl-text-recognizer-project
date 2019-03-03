@@ -17,7 +17,7 @@ Given the output of the model, we can find line regions with an easy image proce
 We are starting from the IAM dataset, which includes not only lines but the original writing sample forms, with each line and word region annotated.
 
 Let's load the IAM dataset and then look at the data files.
-Run `pipenv run python text_recognizer/datasets/iam.py`
+Run `pipenv run python text_recognizer/datasets/iam_dataset.py`
 Let's look at the raw data files, which are in `~/fsdl-text-recognizer-project/data/raw/iam/iamdb/forms`.
 
 We want to crop out the region of each page corresponding to the handwritten paragraph as our model input, and generate corresponding ground truth.
