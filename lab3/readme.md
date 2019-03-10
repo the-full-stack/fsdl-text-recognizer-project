@@ -13,7 +13,7 @@ Move from reading single characters to reading entire lines.
 ## Follow along
 
 ```
-cd lab3_soln/
+cd lab3_sln/
 ```
 
 ## Intro to the EMNIST Lines dataset

@@ -13,7 +13,7 @@ Get familiar with our experiment running and experiment management tools
 
 ```
 git pull
-cd lab4_soln/
+cd lab4_sln/
 ```
 
 ## Intro to Weights & Biases
