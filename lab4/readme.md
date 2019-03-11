@@ -13,7 +13,7 @@ Get familiar with our experiment running and experiment management tools
 
 ```
 git pull
-cd lab4_soln/
+cd lab4_sln/
 ```
 
 ## Intro to Weights & Biases
@@ -36,7 +36,7 @@ You should see something like:
 Manual Entry
 ```
 
-Select your username. 
+Select your username.
 
 ```
 Which project should we use?
@@ -89,11 +89,11 @@ Let's look at a simple implementation of these:
 - Look at `training/prepare_experiments.py`
 - Look at `training/gpu_manager.py`
 
-Let's check it out. Run 
+Let's check it out. Run
 
 ```
 tasks/prepare_sample_experiments.sh
-``` 
+```
 
 or `pipenv run training/prepare_experiments.py training/experiments/sample.json`
 

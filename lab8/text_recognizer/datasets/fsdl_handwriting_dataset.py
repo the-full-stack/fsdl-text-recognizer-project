@@ -83,17 +83,20 @@ def _extract_id_and_data(page_datum):
     id_ = url.split('/')[-1]
     regions = []
     strings = []
-    for annotation in page_datum['annotation']:
-        points = np.array(annotation['points'])
-        x1, y1 = points.min(0)
-        x2, y2 = points.max(0)
-        regions.append({
-            'x1': int(x1 * annotation['imageWidth']),
-            'y1': int(y1 * annotation['imageHeight']),
-            'x2': int(x2 * annotation['imageWidth']),
-            'y2': int(y2 * annotation['imageHeight'])
-        })
-        strings.append(annotation['notes'])
+    try:
+        for annotation in page_datum['annotation']:
+            points = np.array(annotation['points'])
+            x1, y1 = points.min(0)
+            x2, y2 = points.max(0)
+            regions.append({
+                'x1': int(x1 * annotation['imageWidth']),
+                'y1': int(y1 * annotation['imageHeight']),
+                'x2': int(x2 * annotation['imageWidth']),
+                'y2': int(y2 * annotation['imageHeight'])
+            })
+            strings.append(annotation['notes'])
+    except:
+        pass
     return id_, {'url': url, 'regions': regions, 'strings': strings}
 
 
