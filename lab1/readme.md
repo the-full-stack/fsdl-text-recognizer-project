@@ -4,7 +4,7 @@ Before we get started, please run
 
 ```
 cd lab2_sln/
-pipenv run python text_recognizer/datasets/emnist_dataset.py
+pipenv run python3 -m text_recognizer.datasets.emnist_dataset
 cd ..
 ```
 
