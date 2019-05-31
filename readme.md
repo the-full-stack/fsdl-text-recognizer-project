@@ -34,22 +34,15 @@ Project developed during lab sessions of the [Full Stack Deep Learning Bootcamp]
 
 # Setup
 
-## 1. Sign up for W&B
 
-- Go to https://app.wandb.ai
-- Click 'sign up'
-- Sign up with Github (or another if you prefer)
-- Select whatever username you want
+## 1. Set up your machine
 
-## 2. Setup a JupyterLab instance
+- In the live class we used a sponsored instance of Jupyter Hub to run experiments. 
+- You can use Google Colab to run your projects on a notebook in the cloud.
+- We recommend Weights & Biases for experiment tracking. It's a free tool for students, and you can learn more at wandb.com.
 
-- Go to https://app.wandb.ai/profile
-- Enter the code we will share with you at the session into Access Code field.
-- You should be dropped into a JuypyterLab instance with 2 GPUs to use for labs.
 
-*From now on, do everything else in that instance*
-
-## 3. Check out the repo
+## 2. Check out the repo
 
 You should already have the repo in your home directory. Go into it and make sure you have the latest.
 
@@ -66,7 +59,7 @@ cd fsdl-text-recognizer-project
 ```
 
 
-## 4. Set up the Python environment
+## 3. Set up the Python environment
 
 Run
 
