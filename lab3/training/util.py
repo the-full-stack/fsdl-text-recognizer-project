@@ -4,6 +4,10 @@ from typing import Optional
 
 import numpy as np
 from tensorflow.keras.callbacks import EarlyStopping
+# Hide lines below until Lab 4
+import wandb
+from wandb.keras import WandbCallback
+# Hide lines above until Lab 4
 
 from text_recognizer.datasets.dataset import Dataset
 from text_recognizer.models.base import Model
@@ -32,6 +36,12 @@ def train_model(
         gpu_utilization = GPUUtilizationSampler(gpu_ind)
         callbacks.append(gpu_utilization)
 
+    # Hide lines below until Lab 4
+    if use_wandb:
+        wandb.init()
+        wandb_callback = WandbCallback()
+        callbacks.append(wandb_callback)
+    # Hide lines above until Lab 4
 
     model.network.summary()
 

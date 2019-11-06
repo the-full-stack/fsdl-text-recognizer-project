@@ -80,3 +80,13 @@ def download_url(url, filename):
         urlretrieve(url, filename, reporthook=t.update_to, data=None)  # nosec
 
 
+# Hide lines below until Lab 7
+def download_urls(urls, filenames):
+    with ThreadPoolExecutor() as executor:
+        futures = [executor.submit(urlretrieve, url, filename) for url, filename in zip(urls, filenames)]
+        for future in tqdm(as_completed(futures), total=len(futures)):
+            try:
+                future.result()
+            except Exception as e:
+                print('Error', e)
+# Hide lines above until Lab 7

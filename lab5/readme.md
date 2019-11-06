@@ -1,59 +1,70 @@
-# Lab 5: Experimentation
+# Lab 6: Line Detection
 
-In this lab we will introduce the IAM handwriting dataset, and give you a chance to try out different things, run experiments, and review results on W&B.
+We have trained a model that can recognize text in a line, given an image of a single line.
+Our next task is to automatically detect line regions in an image of a whole paragraph of text.
 
-## Goal of the lab
-- Introduce IAM handwriting dataset
-- Try some ideas & review results on W&B
-- See who can get the best score :)
+Our approach will be to train a model that, when given an image containing lines of text, returns a pixelwise labeling of that image, with each pixel belonging to either background, odd line of handwriting, or even line of handwriting.
+Given the output of the model, we can find line regions with an easy image processing operation.
 
-## Outline
-- Intro to IAM datasets
-- Train a baseline model
-- Try your own ideas
+## Setup
 
-## Follow along
+- As always, `git pull` in the `~/fsdl-text-recognizer-project` repo to get the latest code.
+- Do a quick `pipenv sync --dev` to make sure your package versions are correct.
+- Then `cd lab6_sln`.
 
-```
-cd lab5_sln/
-wandb init
-   - team: fsdl
-   - project: fsdl-text-recognizer-project
-```
+## Data
 
-## IAM Lines Dataset
+We are starting from the IAM dataset, which includes not only lines but the original writing sample forms, with each line and word region annotated.
 
-- Look at `notebooks/03-look-at-iam-lines.ipynb`.
+Let's load the IAM dataset and then look at the data files.
+Run `pipenv run python text_recognizer/datasets/iam_dataset.py`
+Let's look at the raw data files, which are in `~/fsdl-text-recognizer-project/data/raw/iam/iamdb/forms`.
 
-## Training
+We want to crop out the region of each page corresponding to the handwritten paragraph as our model input, and generate corresponding ground truth.
 
-Let's train with the default params by running `tasks/train_lstm_line_predictor_on_iam.sh`, which runs the follwing command:
+Code to do this is in `text_recognizer/datasets/iam_paragraphs_dataset.py`
 
-```bash
-pipenv run python training/run_experiment.py --save '{"dataset": "IamLinesDataset", "model": "LineModelCtc", "network": "line_lstm_ctc"}'
-```
+We can look at the results in `notebooks/04-look-at-iam-paragraphs.ipynb` and by looking at some debug images we output in `data/interim/iam_paragraphs`.
 
-This uses our LSTM with CTC model. 8 epochs gets accuracy of 40% and takes about 10 minutes.
+## Training data augmentation
 
-Training longer will keep improving: the same settings get to 60% accuracy in 40 epochs.
+The model code for our new `LineDetector` is in `text_recognizer/models/line_detector_model.py`.
 
-## Ideas for things to try
+Because we only have about a thousand images to learn this task on, data augmentation will be crucial.
+Image augmentations such as streching, slight rotations, offsets, contrast and brightness changes, and potentially even mirror-flipping are tedious to code, and most frameworks provide optimized utility code for the task
 
-For the rest of the lab, let's play around with different things and see if we can improve performance quickly.
+We use Keras's `ImageDataGenerator`, and you can see the parameters for it in `text_recognizer/models/line_detector_model.py`.
+We can take a look at what the data transformations look like in the same notebook.
 
-You can see all of our training runs here: https://app.wandb.ai/fsdl/fsdl-text-recognizer-project
-Feel free to peek in on your neighbors!
+## Network description
 
-If you commit and push your code changes, then the run will also be linked to the exact code your ran, which you will be able to review months later if necessary.
+The network used in this model is `text_recognizer/networks/fcn.py`.
 
+The basic idea is a deep convolutional network with resnet-style blocks (input to block is concatenated to block output).
+We call it FCN, as in "Fully Convolutional Network," after the seminal paper that first used convnets for segmentation.
 
-- Change sliding window width/stride
-- Not using a sliding window: instead of sliding a LeNet over, you could just run the input through a few conv/pool layers, squeeze out the last (channel) dimension (which should be 0), and input the result into the LSTM. You can play around with the parameters there.
-- Change number of LSTM dimensions
-- Wrap the LSTM in a Bidirectional() wrapper, which will have two LSTMs read the input forward and backward and concatenate the outputs
-- Stack a few layers of LSTMs
-- Try to get an all-conv approach to work for faster training
-- Add BatchNormalization
-- Play around with learning rate. In order to launch experiments with different learning rates, you will have to implement something in `training/run_experiment.py` and `text_recognizer/datasets/base.py`
-- Train on EmnistLines and fine-tune on IamLines. In order to do that, you might want to implement a model wrapper class that can take multiple datasets.
-- Come up with your own!
+Unlike the original FCN, however, we do not maxpool or upsample, but instead rely on dilated convolutions to rapidly increase the effective receptive field.
+[Here](https://fomoro.com/projects/project/receptive-field-calculator) is a very calculator of the effective receptive field size of a convnet.
+
+The crucial thing to understand is that because we are labeling odd and even lines differently, each predicted pixel must have the context of the entire image to correctly label -- otherwise, there is no way to know whether the pixel is on an odd or even line.
+
+## Review results
+
+The model converges to something really good.
+
+Check out `notebooks/04b-look-at-line-detector-predictions.ipynb` to see sample predictions on the test set.
+
+We also plot some sample training data augmentation in that notebook.
+
+## Combining the two models
+
+Now we are ready to combine the new `LineDetector` model and the `LinePredictor` model that we trained yesterday.
+
+This is done in `text_recognizer/paragraph_text_recognizer.py`, which loads both models, find line regions with one, and runs each crop through the other.
+
+We can see that it works as expected (albeit not too accurately yet) by running `pipenv run pytest -s text_recognizer/tests/test_paragraph_text_recognizer.py`.
+
+## Things to try
+
+- Try adding more data augmentations, or mess with the parameters of the existing ones
+- Try the U-Net architecture, that MaxPool's down and then UpSamples back up, with increased conv layer channel dimensions in the middle (https://lmb.informatik.uni-freiburg.de/people/ronneber/u-net/).

@@ -1,57 +1,49 @@
-# Lab 7: Data Labeling and Versioning
+# Lab 8: Testing and Continuous Integration
 
-In this lab we will annotate the handwriting samples we collected, export and version the resulting data, write an interface to the new data format, and download the pages in parallel.
+As always, the first thing to do is `git pull` :)
 
-## Data labeling
+In this lab, we will
 
-We will be using a simple online data annotation web service called Dataturks.
+- Add evaluation tests
+- Add linting to our codebase
+- Set up continuous integration via CircleCI, and see our commits pass/fail
 
-Please head to the [project page](https://dataturks.com/projects/sergeykarayev/fsdl_handwriting) and log in using our shared credential: `annotator@fullstackdeeplearning.com` (the password will be shared during lab).
+## Linting script
 
-You should be able to start tagging now.
-Let's do it together for a little bit, and then you'll have time to do a full page by yourself.
+Running `tasks/lint.sh` fully lints our codebase with a few different checkers:
 
-We'll sync up and review results in a few minutes.
+- `pipenv check` scans our Python package dependency graph for known security vulnerabilities
+- `pylint` does static analysis of Python files and reports both style and bug problems
+- `pycodestyle` checks for simple code style guideline violations (somewhat overlapping with `pylint`)
+- `mypy` performs static type checking of Python files
+- `bandit` performs static analysis to find common security vulnerabilities in Python code
+- `shellcheck` finds bugs and potential bugs in shell scrips
 
-(Review results and discuss any differences in annotation and how they could be prevented.)
+A note: in writing Bash scripts, I often refer to [this excellent guide](http://redsymbol.net/articles/unofficial-bash-strict-mode/).
 
-## Export data and update metadata file
+Note that the linters are configured using `.pylintrc` and `setup.cfg` files, as well as flags specified in `lint.sh`.
 
-Let's now export the data from Dataturks and add it to our version control.
+Getting linting right will pay off in no time, and is a must for any multi-developer codebase.
 
-You have noticed the `metadata.toml` files in all of our `data/raw` directories.
-They contain the remote source of the data, the filename it should have when downloaded, and a SHA-256 hash of the downloaded file.
+## Setting up CircleCI
 
-The idea is that the data file has all the information needed for our dataset.
-In our case, it has image URLs and all the annotations we made.
-From this, we can download the images, and transform the annotation data into something usable by our training scripts.
-The hash, combined with the state of the codebase (tracked by git), then uniquely identifies the data we're going to use to train.
+The relevant new files for setting up continuous integration are
 
-We replace the current `fsdl_handwriting.json` with the one we just exported, and now need to update the metadata file, since the hash is different.
-SHA256 hash of any file can be computed by running `shasum -a 256 <filename>`.
-We can also update `metadata.toml` with a convenient script that replace the SHA-256 of the current file with the SHA-256 of the new file.
-There is a convenience task script defined: `tasks/update_fsdl_paragraphs_metadata.sh`.
+- `evaluation/evaluate_character_predictor.py`
+- `evaluation/evaluate_line_predictor.py`
+- `tasks/run_validation_tests.sh`
 
-The data file itself is checked into version control, but tracked with git-lfs, as it can get heavyweight and can change frequently as we keep adding and annotating more data.
-Git-lfs actually does something very similar to what we more manually do with `metadata.toml`.
-The reason we also use the latter is for standardization across other types of datasets, which may not have a file we want to check into even git-lfs -- for example, EMNIST and IAM, which are too large as they include the images.
+There is one additional file that is outside of the lab8 directory (in the top-level directory): `.circleci/config.yml`
 
-## Download images
+Let's set up CircleCI first and then look at the new evaluation files.
 
-The class `IamHandwritingDataset` in `text_recognizer/datasets/iam_handwriting.py` must be able to load the data in the exported format and present it to consumers in a format they expect (e.g. `dataset.line_regions_by_id`).
+Go to https://circleci.com and log in with your Github account.
+Click on Add Project. Select your fork of the `fsdl-text-recognizer-project` repo.
+It will ask you to place the `config.yml` file in the repo.
+Good news -- it's already there, so you can just hit the "Start building" button.
 
-Since this data export does not come with images, but only pointers to remote locations of the images, the class must also be responsible for downloading the images.
+While CircleCI starts the build, let's look at the `config.yml` file.
 
-In downloading many images, it is very useful to do so in parallel.
-We use the `concurrent.futures.ThreadPoolExecutor` method, and use the `tqdm` package to provide a nice progress bar.
+Let's also check out the new validation test files: they simply evaluate the trained predictors on respective test sets, and make sure they are above threshold accuracy.
 
-## Looking at the data
-
-We can confirm that we loaded the data correctly by looking at line crops and their corresponding strings.
-
-Make sure you are in `lab7_sln` directory, and take a look at `notebooks/05-look-at-fsdl-handwriting.ipynb`.
-
-## Training on the new dataset
-
-We're not going to have time to train on the new dataset, but that is something that is now possible.
-As an exercise, you could write `FsdlHandwritingLinesDataset` and `FsdlHandwritingParagraphsDataset`, and be able to train a model on a combination of IAM and FSDL Handwriting data on both the line detection and line text prediction tasks.
+Now that CircleCI is done building, let's push a commit so that we can see it build again, and check out the nice green chechmark in our commit history (https://github.com/sergeyktest/fsdl-text-recognizer-project/commits/master)
