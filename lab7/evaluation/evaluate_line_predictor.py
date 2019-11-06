@@ -27,7 +27,7 @@ class TestEvaluateLinePredictorEmnist(unittest.TestCase):
 
         print(f'acc: {metric}, time_taken: {time_taken}')
         self.assertGreater(metric, 0.6)
-        self.assertLess(time_taken, 60)
+        self.assertLess(time_taken, 120)
 
 
 class TestEvaluateLinePredictorIam(unittest.TestCase):
@@ -43,4 +43,4 @@ class TestEvaluateLinePredictorIam(unittest.TestCase):
 
         print(f'acc: {metric}, time_taken: {time_taken}')
         self.assertGreater(metric, 0.6)
-        self.assertLess(time_taken, 90)
+        self.assertLess(time_taken, 180)

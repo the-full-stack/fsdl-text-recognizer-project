@@ -1,4 +1,4 @@
-# Lab 3
+# Lab 2: Line text recognizer
 
 ## Goal of the lab
 
@@ -13,7 +13,8 @@ Move from reading single characters to reading entire lines.
 ## Follow along
 
 ```
-cd lab3_sln/
+git pull
+cd lab2/
 ```
 
 ## Intro to the EMNIST Lines dataset

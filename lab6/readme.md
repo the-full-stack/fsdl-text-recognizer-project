@@ -1,4 +1,4 @@
-# Lab 7: Data Labeling and Versioning
+# Lab 6: Data Labeling and Versioning
 
 In this lab we will annotate the handwriting samples we collected, export and version the resulting data, write an interface to the new data format, and download the pages in parallel.
 
@@ -33,8 +33,8 @@ We can also update `metadata.toml` with a convenient script that replace the SHA
 There is a convenience task script defined: `tasks/update_fsdl_paragraphs_metadata.sh`.
 
 The data file itself is checked into version control, but tracked with git-lfs, as it can get heavyweight and can change frequently as we keep adding and annotating more data.
-Git-lfs actually does something very similar to what we more manually do with `metadata.toml`.
-The reason we also use the latter is for standardization across other types of datasets, which may not have a file we want to check into even git-lfs -- for example, EMNIST and IAM, which are too large as they include the images.
+Note that `git-lfs` actually does something very similar to what we more manually do with `metadata.toml`.
+The reason we also use the latter is for standardization across other types of datasets, which may not have a file we want to check into even `git-lfs` -- for example, EMNIST and IAM, which are too large as they include the images.
 
 ## Download images
 
@@ -49,7 +49,7 @@ We use the `concurrent.futures.ThreadPoolExecutor` method, and use the `tqdm` pa
 
 We can confirm that we loaded the data correctly by looking at line crops and their corresponding strings.
 
-Make sure you are in `lab7_sln` directory, and take a look at `notebooks/05-look-at-fsdl-handwriting.ipynb`.
+Make sure you are in `lab6` directory, and take a look at `notebooks/05-look-at-fsdl-handwriting.ipynb`.
 
 ## Training on the new dataset
 

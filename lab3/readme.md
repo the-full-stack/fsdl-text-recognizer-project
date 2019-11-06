@@ -1,4 +1,4 @@
-# Lab 4
+# Lab 3: Experiment Management
 
 ## Goal of the lab
 
@@ -13,7 +13,7 @@ Get familiar with our experiment running and experiment management tools
 
 ```
 git pull
-cd lab4_sln/
+cd lab3/
 ```
 
 ## Intro to Weights & Biases
@@ -26,7 +26,7 @@ cd lab4_sln/
 ### Let's get started with W&B!
 
 ```
-wandb init
+pipenv run wandb init
 ```
 
 You should see something like:
@@ -70,7 +70,7 @@ Click the link to see your run train.
 ### Your second W&B experiment
 
 - Open up another terminal (click File->New->Terminal)
-- `cd fsdl-text-recognizer-project/lab4`
+- `cd fsdl-text-recognizer-project/lab3`
 - launch the same experiment, but with a bigger batch size
 
 ```sh

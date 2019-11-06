@@ -1,12 +1,19 @@
-# Lab 9: Web Deployment
+# Lab 8: Web Deployment
 
-In this lab, we will
+## Goal of the lab
 
 - Run our LinePredictor as a web app, and send it some requests
 - Dockerize our web app
 - Deploy our web app as a serverless function to AWS Lambda
 - Look at basic metrics and set up a more advanced one
 - Experience something going wrong in our deployed service, and catching it with metrics
+
+## Follow along
+
+```
+git pull
+cd lab8/
+```
 
 This lab has quite a few new files, mostly in the new `api/` directory.
 
@@ -22,7 +29,7 @@ Open up another terminal tab (click on the '+' button under 'File' to open the
 launcher). In this terminal, we'll send some test image to the web server
 we're running in the first terminal.
 
-**Make sure to `cd` into the `lab9` directory in this new terminal.**
+**Make sure to `cd` into the `lab8` directory in this new terminal.**
 
 ```
 export API_URL=http://0.0.0.0:8000
@@ -30,7 +37,7 @@ curl -X POST "${API_URL}/v1/predict" -H 'Content-Type: application/json' --data 
 ```
 
 If you want to look at the image you just sent, you can navigate to
-`lab9/text_recognizer/tests/support/emnist_lines` in the file browser on the
+`lab8/text_recognizer/tests/support/emnist_lines` in the file browser on the
 left, and open the image.
 
 We can also send a request specifying a URL to an image:
@@ -56,7 +63,7 @@ tasks/test_api.sh
 Now, we'll build a docker image with our application.
 The Dockerfile in `api/Dockerfile` defines how we're building the docker image.
 
-Still in the `lab9` directory, run:
+Still in the `lab8` directory, run:
 
 ```sh
 tasks/build_api_docker.sh
@@ -129,7 +136,7 @@ pipenv run sls deploy -v
 
 Near the end of the output of the deploy command, you'll see links to your API endpoint. Copy the top one (the one that doesn't end in `{proxy+}`).
 
-As before, we can test out our API by running a few curl commands (from the `lab9` directory). We need to change the `API_URL` first though to point it at Lambda:
+As before, we can test out our API by running a few curl commands (from the `lab8` directory). We need to change the `API_URL` first though to point it at Lambda:
 
 ```
 export API_URL="https://REPLACE_THIS.execute-api.us-west-2.amazonaws.com/dev/"
@@ -137,60 +144,7 @@ curl -X POST "${API_URL}/v1/predict" -H 'Content-Type: application/json' --data 
 curl "${API_URL}/v1/predict?image_url=http://s3-us-west-2.amazonaws.com/fsdl-public-assets/emnist_lines/or%2Bif%2Bused%2Bthe%2Bresults.png"
 ```
 
-If the POST request fails, it's probably because you are in `api` and not in the top-level `lab9` directory.
+If the POST request fails, it's probably because you are in `api` and not in the top-level `lab8` directory.
 
 You'll want to run the curl commands a couple of times -- the first execution may time out, because the function has to "warm up."
 After the first request, it will stay warm for 10-60 minutes.
-
-## Monitoring
-
-We can look at the requests our function is receiving in the AWS CloudWatch interface.
-It shows requests, errors, duration, and some other metrics.
-
-What it does not show is stuff that we care about specifically regarding machine learning: data and prediction distributions.
-
-This is why we added a few extra metrics to `api/app.py`, in `predict()`.
-Using these simple print statements, we can set up CloudWatch metrics by using the Log Metrics functionality.
-
-### Log Metrics
-
-Log in to your AWS Console, and make sure you're in the `us-west-2` region.
-
-Once you're in, click on 'Services' and go to 'CloudWatch' under 'Management Tools.' Click on 'Logs' in the left sidebar. This will have several log groups -- one for each of us.
-You can filter for yours by entering `/aws/lambda/text-recognizer-USERNAME-dev-api` (you need to enter the whole thing, not just your username).
-Click on yours. You'll some log streams. If you click on one, you'll see some logs for requests to your API. Each log entry starts with START and ends with REPORT. The REPORT line has some interesting information about the API call, including memory usage and duration.
-
-We're also logging a couple of metrics for you: the confidences of the predictor and the mean intensities of the input images.
-Next, we're going to make it so you can visualize these metrics. Go back to the list of Log Groups by clicking on Logs again in the left sidebar.
-Find your log group, but don't click on it. You'll see a column that says 'Metric Filters.' You currently likely have 0 filters. Click on "0 filters."
-Click on 'Add Metric Filter.'
-
-Now, we need to add a pattern for parsing our metric out of the logs. Here's one you can use for the confidence levels. Enter this in the 'Filter Pattern' box.
-```
-[level=METRIC, metric_name=confidence, metric_value]
-```
-Click on 'Assign Metric.'
-Now, we need to name the metric and tell it what the data source is. Enter 'USERNAME_confidence' in the 'Metric name' box (replace USERNAME as usual). Click on 'Show advanced metric settings,' and for Metric Value, click on $metric_value to populate the text box. Hit 'Create Filter.'
-Since we're already here, let's go ahead and make another metric filter for the mean intensity. You can use this Filter Pattern:
-```
-[level=METRIC, metric_name=mean_intensity, metric_value]
-```
-You should name your metric "USERNAME_mean_intensity."
-
-Now we have a couple of metric filters set up.
-Unfortunately, Metric Filters only apply to new log entries, so go back to your terminal and send a few more requests to your endpoint.
-
-Now we can make a dashboard that shows our metrics. Click on 'Dashboards' in the left sidebar. Click 'Create Dashboard.' Name your dashboard your USERNAME.
-
-We're going to add a few widgets to your dashboard. For the first widget, select 'Line'. In the search box, search for your username.
-Click on 'Lambda > By Function Name' in the search results, and select the checkbox for 'Invocations.' This'll make a plot showing you much your API is being called.
-
-Let's add another widget -- select Line again. Go back to the Lambda metrics and select 'Duration' this time.
-
-Lastly, let's plot our custom metrics. Add one more 'Line' widget, search for your username again, and click on 'LogMetrics' and then 'Metrics with no dimensions'.
-Check two checkboxes: `USERNAME_confidence` and `USERNAME_mean_intensity.` Before hitting Create, click on the 'Graphed Metrics' tab above, and under the 'Y Axis' column,
-select the right arrow for one of the metrics (it doesn't matter which one). Now hit create.
-
-Feel free to resize and reorder your widgets.
-
-Make sure to save your dashboard -- else it won't persist across sessions.

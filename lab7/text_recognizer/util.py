@@ -1,4 +1,5 @@
 """Utility functions for text_recognizer module."""
+import base64
 from concurrent.futures import as_completed, ThreadPoolExecutor
 from pathlib import Path
 from typing import Union
@@ -69,7 +70,7 @@ def download_url(url, filename):
         urlretrieve(url, filename, reporthook=t.update_to, data=None)  # nosec
 
 
-# Hide lines below until Lab 7
+# Hide lines below until Lab 6
 def download_urls(urls, filenames):
     with ThreadPoolExecutor() as executor:
         futures = [executor.submit(urlretrieve, url, filename) for url, filename in zip(urls, filenames)]
@@ -78,4 +79,4 @@ def download_urls(urls, filenames):
                 future.result()
             except Exception as e:
                 print('Error', e)
-# Hide lines above until Lab 7
+# Hide lines above until Lab 6

@@ -1,12 +1,17 @@
-# Lab 8: Testing and Continuous Integration
+# Lab 7: Testing and Continuous Integration
 
-As always, the first thing to do is `git pull` :)
-
-In this lab, we will
+## Goal of the lab
 
 - Add evaluation tests
 - Add linting to our codebase
 - Set up continuous integration via CircleCI, and see our commits pass/fail
+
+## Follow along
+
+```
+git pull
+cd lab7/
+```
 
 ## Linting script
 
@@ -31,9 +36,9 @@ The relevant new files for setting up continuous integration are
 
 - `evaluation/evaluate_character_predictor.py`
 - `evaluation/evaluate_line_predictor.py`
-- `tasks/run_validation_tests.sh`
+- `tasks/test_validation.sh`
 
-There is one additional file that is outside of the lab8 directory (in the top-level directory): `.circleci/config.yml`
+There is one additional file that is outside of the lab7 directory (in the top-level directory): `.circleci/config.yml`
 
 Let's set up CircleCI first and then look at the new evaluation files.
 

@@ -1,7 +1,8 @@
 """LSTM with CTC for handwritten text recognition within a line."""
 import tensorflow.keras.backend as K
 from tensorflow.python.client import device_lib  # pylint: disable=no-name-in-module
-from tensorflow.keras.layers import Dense, Input, Reshape, TimeDistributed, Lambda, LSTM, CuDNNLSTM
+from tensorflow.keras.layers import Dense, Input, Reshape, TimeDistributed, Lambda, LSTM
+from tensorflow.compat.v1.keras.layers import CuDNNLSTM
 from tensorflow.keras.models import Model as KerasModel
 
 
