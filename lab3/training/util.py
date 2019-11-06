@@ -2,7 +2,6 @@
 from time import time
 from typing import Optional
 
-import numpy as np
 from tensorflow.keras.callbacks import EarlyStopping
 # Hide lines below until Lab 3
 import wandb
@@ -32,7 +31,7 @@ def train_model(
 
     # Hide lines below until Lab 3
     if use_wandb:
-        wandb.init()
+        wandb.init(config={'gpu_ind': gpu_ind})
         wandb_callback = WandbCallback()
         callbacks.append(wandb_callback)
     # Hide lines above until Lab 3

@@ -21,11 +21,14 @@ class FsdlHandwritingDataset(Dataset):
         self.metadata = toml.load(METADATA_FILENAME)
         with open(RAW_DATA_DIRNAME / self.metadata['filename']) as f:
             page_data = [json.loads(line) for line in f.readlines()]
+        # NOTE: pylint bug https://github.com/PyCQA/pylint/issues/3164
+        # pylint: disable=unnecessary-comprehension
         self.data_by_page_id = {
             id_: data
             for id_, data
             in (_extract_id_and_data(page_datum) for page_datum in page_data)
         }
+        # pylint: enable=unnecessary-comprehension
 
     def load_or_generate_data(self):
         if len(self.page_filenames) < len(self.data_by_page_id):
@@ -95,7 +98,7 @@ def _extract_id_and_data(page_datum):
                 'y2': int(y2 * annotation['imageHeight'])
             })
             strings.append(annotation['notes'])
-    except:
+    except Exception:
         pass
     return id_, {'url': url, 'regions': regions, 'strings': strings}
 

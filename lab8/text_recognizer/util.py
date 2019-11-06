@@ -1,5 +1,7 @@
 """Utility functions for text_recognizer module."""
+# Hide lines below until Lab 8
 import base64
+# Hide lines above until Lab 8
 from concurrent.futures import as_completed, ThreadPoolExecutor
 from pathlib import Path
 from typing import Union
@@ -45,9 +47,9 @@ def read_b64_image(b64_string, grayscale=False):
         return cv2.imdecode(np.frombuffer(base64.b64decode(b64_data), np.uint8), imread_flag)
     except Exception as e:
         raise ValueError("Could not load image from b64 {}: {}".format(b64_string, e))
+
+
 # Hide lines above until Lab 8
-
-
 def write_image(image: np.ndarray, filename: Union[Path, str]) -> None:
     cv2.imwrite(str(filename), image)
 

@@ -26,7 +26,6 @@ def create_emnist_lines_support_files():
         ).strip(' _')
         print(label)
         util.write_image(image, str(SUPPORT_DIRNAME / f'{label}.png'))
-
         # Hide lines below until Lab 8
         # Inverted version
         image = -(image - 255)

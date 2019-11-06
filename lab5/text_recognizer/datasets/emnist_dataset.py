@@ -104,8 +104,10 @@ def _process_raw_dataset(filename: str):
     zip_file = zipfile.ZipFile(filename, 'r')
     zip_file.extract('matlab/emnist-byclass.mat')
 
+    from scipy.io import loadmat  # pylint: disable=import-outside-toplevel
+    # NOTE: If importing at the top of module, would need to list scipy as prod dependency.
+
     print('Loading training data from .mat file')
-    from scipy.io import loadmat
     data = loadmat('matlab/emnist-byclass.mat')
     x_train = data['dataset']['train'][0, 0]['images'][0, 0].reshape(-1, 28, 28).swapaxes(1, 2)
     y_train = data['dataset']['train'][0, 0]['labels'][0, 0]

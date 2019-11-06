@@ -140,7 +140,7 @@ def _get_max_paragraph_crop_height(line_regions_by_id):
     return max(heights)
 
 
-def _crop_paragraph_image(filename, line_regions, crop_dims, final_dims):
+def _crop_paragraph_image(filename, line_regions, crop_dims, final_dims):  # pylint: disable=too-many-locals
     image = util.read_image(filename, grayscale=True)
 
     min_y1 = min(r['y1'] for r in line_regions) - PARAGRAPH_BUFFER
@@ -166,7 +166,7 @@ def _crop_paragraph_image(filename, line_regions, crop_dims, final_dims):
         ] = ind % 2 + 1
 
     # Generate image for debugging
-    import matplotlib.pyplot as plt
+    import matplotlib.pyplot as plt  # pylint: disable=import-outside-toplevel
     cmap = plt.get_cmap('Set1')
     image_crop_for_debug = np.dstack([image_crop, image_crop, image_crop])
     for ind, region in enumerate(line_regions):

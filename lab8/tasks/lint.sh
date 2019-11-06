@@ -13,6 +13,9 @@ pipenv run pylint --ignore=.serverless api text_recognizer training || FAILURE=t
 echo "pycodestyle"
 pipenv run pycodestyle --exclude=node_modules,.serverless,.ipynb_checkpoints api text_recognizer training || FAILURE=true
 
+# echo "pydocstyle"
+# pipenv run pydocstyle pandagrader projects lambda_deployment || FAILURE=true
+
 echo "mypy"
 pipenv run mypy api text_recognizer training || FAILURE=true
 
@@ -24,7 +27,7 @@ shellcheck tasks/*.sh || FAILURE=true
 
 if [ "$FAILURE" = true ]; then
   echo "Linting failed"
-  exit 0  # TODO: don't actually fail circleci
+  exit 1
 fi
 echo "Linting passed"
 exit 0

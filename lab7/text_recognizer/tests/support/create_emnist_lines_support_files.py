@@ -28,6 +28,5 @@ def create_emnist_lines_support_files():
         util.write_image(image, str(SUPPORT_DIRNAME / f'{label}.png'))
 
 
-
 if __name__ == '__main__':
     create_emnist_lines_support_files()

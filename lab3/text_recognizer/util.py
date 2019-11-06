@@ -1,5 +1,4 @@
 """Utility functions for text_recognizer module."""
-import base64
 from concurrent.futures import as_completed, ThreadPoolExecutor
 from pathlib import Path
 from typing import Union
@@ -34,8 +33,6 @@ def read_image(image_uri: Union[Path, str], grayscale=False) -> np.array:
     except Exception as e:
         raise ValueError("Could not load image at {}: {}".format(image_uri, e))
     return img
-
-
 
 
 def write_image(image: np.ndarray, filename: Union[Path, str]) -> None:
