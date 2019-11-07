@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "dependencies": {},
   "devDependencies": {
-    "serverless-python-requirements": "sergeyk/serverless-python-requirements#master",
+    "serverless-python-requirements": "eoinsha/serverless-python-requirements#master", // https://github.com/UnitedIncome/serverless-python-requirements/pull/331
     "serverless-wsgi": "^1.7.1",
-    "serverless": "^1.38.0"
+    "serverless": "^1.57.0"
   }
 }

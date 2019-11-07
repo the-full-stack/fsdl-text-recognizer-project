@@ -71,11 +71,8 @@ tasks/build_api_docker.sh
 
 This should take a couple of minutes to complete.
 
-When it's finished, you can run the server with
+When it's finished, you can run the server with `tasks/run_api_docker.sh`
 
-```sh
-docker run -p 8000:8000 --name api -it --rm text_recognizer_api
-```
 
 You can run the same curl commands as you did when you ran the flask server earlier, and see that you're getting the same results.
 
@@ -107,6 +104,7 @@ First, let's go into the `api` directory and install the dependencies for server
 ```sh
 cd api
 npm install
+export PATH="$PWD/node_modules/serverless/bin:$PATH"
 ```
 
 Next, we'll need to configure serverless. Edit `serverless.yml` and change the service name on the first line (you can use your Github username for USERNAME):
@@ -115,7 +113,7 @@ Next, we'll need to configure serverless. Edit `serverless.yml` and change the s
 service: text-recognizer-USERNAME
 ```
 
-Next, run `sls info`.
+Next, run `serverless info`.
 You'll see a message asking you to set up your AWS credentials.
 
 You won't be able to quickly get those during lab right now, but you can sign for an AWS account, and note down your access key and secret key -- I store mine in 1Password, right next to my password and 2FA.
@@ -123,7 +121,7 @@ You won't be able to quickly get those during lab right now, but you can sign fo
 Edit the command below and substitute your credentials for the placeholders:
 
 ```
-sls config credentials --provider aws --key AKIAIOSFODNN7EXAMPLE --secret wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+serverless config credentials --provider aws --key REPLACE_THIS --secret REPLACE_THIS
 ```
 
 Now you've got everything configured, and are ready to deploy. Serverless will package up your flask API before deploying it.
@@ -131,7 +129,7 @@ It will install all of the python packages in a docker container that matches th
 This will take 3-5 minutes. This command will package up and deploy your flask API:
 
 ```
-pipenv run sls deploy -v
+serverless deploy -v
 ```
 
 Near the end of the output of the deploy command, you'll see links to your API endpoint. Copy the top one (the one that doesn't end in `{proxy+}`).

@@ -16,6 +16,8 @@ provider:
   memorysize: 3096
   timeout: 30
   versionFunctions: false
+  iamManagedPolicies:
+    - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 
 functions:
   api:
@@ -38,8 +40,10 @@ custom:
     slimPatterns:
       - "**/*.egg-info*"
       - "**/doc"
-      - "**/tensorboard"
-      - "**/tensorflow/contrib"
       - "**/tests"
-    strip: false
+      - "tensorflow/contrib"
+      - "tensorboard"
+    stripExcludes:
+      - '*/cv2/*'
+      - '*/h5py/*'
     zip: true

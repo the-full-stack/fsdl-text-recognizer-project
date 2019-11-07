@@ -2,7 +2,8 @@
 FROM ubuntu:18.04
 
 # Install pipenv
-RUN apt-get update && apt-get install python3-pip -y && pip3 install pipenv
+RUN apt-get update
+RUN apt-get install -y python3-pip
 
 # Create the working directory
 RUN set -ex && mkdir /repo
@@ -13,8 +14,6 @@ COPY text_recognizer/ ./text_recognizer
 COPY api/ ./api
 
 # Install Python dependencies
-ENV LC_ALL C.UTF-8
-ENV LANG C.UTF-8
 RUN set -ex && pip3 install -r api/requirements.txt
 
 # Run the web server
