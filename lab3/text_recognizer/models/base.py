@@ -63,8 +63,8 @@ class Model:
             epochs=epochs,
             callbacks=callbacks,
             validation_data=test_sequence,
-            use_multiprocessing=True,
-            workers=2,
+            use_multiprocessing=False,
+            workers=1,
             shuffle=True
         )
 

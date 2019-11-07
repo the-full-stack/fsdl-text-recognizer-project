@@ -8,11 +8,10 @@ boltons = "*"
 editdistance = "*"
 flask = "*"
 h5py = "*"
-ipdb = "*"
 numpy = "*"
 opencv-python-headless = "*"
 requests = "*"
-tensorflow-gpu = ">=1.11,<1.12"
+tensorflow-gpu = "==1.14.*"
 toml = "*"
 tqdm = "*"
 
@@ -24,15 +23,16 @@ grequests = "*" # admin
 itermplot = "*"
 jupyterlab = "*"
 matplotlib = "*"
-mypy = "==0.660" # TODO (2019-02-27) bump when unresolvable subdependency mismatch between mypy and pylint is resolved
+mypy = "*"
 nltk = "*"
 pycodestyle = "*"
+pydocstyle = "*"
 pylint = "*"
 pytest = "*"
 pyyaml = "*"
 redlock-py = "*"
+tornado = "*"
 scipy = "*"
-tornado = "==5.1.1"  # TODO (2019-03-02) version 6.0 makes jupyter notebooks unusable
 wandb = "*"
 
 [requires]

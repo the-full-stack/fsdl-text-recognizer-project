@@ -1,0 +1,49 @@
+service: text-recognizer-USERNAME
+
+frameworkVersion: ">=1.2.0 <2.0.0"
+
+package:
+  exclude:
+    - "**/*"
+  include:
+    - ../text_recognizer/**/*
+    - app.py
+
+provider:
+  name: aws
+  region: us-west-2
+  runtime: python3.6
+  memorysize: 3096
+  timeout: 30
+  versionFunctions: false
+  iamManagedPolicies:
+    - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+
+functions:
+  api:
+    handler: wsgi_handler.handler
+    events:
+      - http: ANY /
+      - http: ANY {proxy+}
+
+plugins:
+  - serverless-python-requirements
+  - serverless-wsgi
+
+custom:
+  wsgi:
+    app: app.app
+    packRequirements: false
+  pythonRequirements:
+    dockerizePip: true
+    slim: true
+    slimPatterns:
+      - "**/*.egg-info*"
+      - "**/doc"
+      - "**/tests"
+      - "tensorflow/contrib"
+      - "tensorboard"
+    stripExcludes:
+      - '*/cv2/*'
+      - '*/h5py/*'
+    zip: true

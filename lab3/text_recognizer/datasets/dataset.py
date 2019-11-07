@@ -19,7 +19,7 @@ class Dataset:
 def _download_raw_dataset(metadata):
     if os.path.exists(metadata['filename']):
         return
-    print('Downloading raw dataset...')
+    print(f"Downloading raw dataset from {metadata['url']}...")
     util.download_url(metadata['url'], metadata['filename'])
     print('Computing SHA-256...')
     sha256 = util.compute_sha256(metadata['filename'])

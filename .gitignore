@@ -1,7 +1,7 @@
 # Data
 data/processed
 data/interim
-data/raw/emnist/matlab.zip
+data/raw/emnist/matlab*
 data/raw/fsdl_handwriting/pages
 data/raw/iam/iamdb
 data/raw/iam/iamdb.zip

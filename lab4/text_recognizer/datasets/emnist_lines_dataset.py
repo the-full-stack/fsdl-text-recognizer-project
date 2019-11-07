@@ -63,7 +63,8 @@ class EmnistLinesDataset(Dataset):
     def _generate_data(self, split):
         print('EmnistLinesDataset generating data...')
 
-        from text_recognizer.datasets.sentence_generator import SentenceGenerator
+        from text_recognizer.datasets.sentence_generator \
+            import SentenceGenerator  # pylint: disable=import-outside-toplevel
         sentence_generator = SentenceGenerator(self.max_length)
 
         emnist = self.emnist
@@ -119,7 +120,8 @@ def construct_image_from_string(string: str, samples_by_char: dict, max_overlap:
 def create_dataset_of_images(N, samples_by_char, sentence_generator, max_overlap):
     sample_label = sentence_generator.generate()
     sample_image = construct_image_from_string(sample_label, samples_by_char, 0)  # Note that sample_image has 0 overlap
-    images = np.zeros((N, sample_image.shape[0], sample_image.shape[1]), np.uint8)  # pylint: disable=no-member
+    images = np.zeros((N, sample_image.shape[0], sample_image.shape[1]),  # pylint: disable=unsubscriptable-object
+                      np.uint8)
     labels = []
     for n in range(N):
         label = None

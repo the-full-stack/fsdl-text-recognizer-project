@@ -6,7 +6,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.6.7
+      - image: circleci/python:3.6.8
 
     steps:
       - checkout
@@ -51,18 +51,18 @@ jobs:
           name: run linting
           when: always
           command: |
-            cd lab9 && PYTHONPATH=. ./tasks/lint.sh
+            cd lab8 && PYTHONPATH=. ./tasks/lint.sh
 
       - run:
           name: run prediction tests
           when: always
           command: |
-            cd lab9 && PYTHONPATH=. pipenv run pytest -s text_recognizer/tests/*
+            cd lab8 && PYTHONPATH=. pipenv run pytest -s text_recognizer/tests/*
 
       - run:
           name: run evaluation tests
           command: |
-            cd lab9 && PYTHONPATH=. pipenv run pytest -s evaluation/*
+            cd lab8 && PYTHONPATH=. pipenv run pytest -s evaluation/*
 
       - store_artifacts:
           path: test-reports

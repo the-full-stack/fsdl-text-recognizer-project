@@ -1,110 +1,88 @@
-# Lab 1: Codebase tour
-
-Before we get started, please run
-
-```
-cd lab2_sln/
-pipenv run python text_recognizer/datasets/emnist_dataset.py
-cd ..
-```
+# Lab 1: Single-character prediction
 
 ## Goal of the lab
 
-Familiarize you with the high-level organizational design of the codebase
+Train a model to solve a simplified version of the line text recognition problem.
+
+## Outline
+
+- Intro to EMNIST, a character prediction dataset.
+- Explore the `networks` and `training` code.
+- Train simple MLP/CNN baselines to solve EMNIST.
+- Test your model.
 
 ## Follow along
 
 ```
-cd lab9_sln/
+git pull
+pipenv sync -d
+cd lab1/
 ```
 
-## Project structure
+## Intro to EMNIST
 
-Web backend
+- EMNIST = Extended Mini-NIST :)
+- All English letters and digits presented in the MNIST format.
+- Look at: `notebooks/01-look-at-emnist.ipynb`
 
-```
-api/                        # Code for serving predictions as a REST API.
-    tests/test_app.py           # Test that predictions are working
-    Dockerfile                  # Specificies Docker image that runs the web server.
-    __init__.py
-    app.py                      # Flask web server that serves predictions.
-    serverless.yml              # Specifies AWS Lambda deployment of the REST API.
-```
-
-Data (not under version control - one level up in the heirarchy)
+## Networks and training code
 
 ```
-data/                            # Training data lives here
-    raw/
-        emnist/metadata.toml     # Specifications for downloading data
+- text_recognizer/networks/mlp.py
+- text_recognizer/networks/lenet.py
+- text_recognizer/models/base.py
+- text_recognizer/models/character_model.py
+- training/util.py
 ```
 
-Experimentation
+## Train MLP and CNN
 
-```
-    evaluation/                     # Scripts for evaluating model on eval set.
-        evaluate_character_predictor.py
+You can run the shortcut command `tasks/train_character_predictor.sh`, which runs the following:
 
-    notebooks/                  # For snapshots of initial exploration, before solidfying code as proper Python files.
-        01-look-at-emnist.ipynb
-```
-
-Convenience scripts
-
-```
-    tasks/
-        # Deployment
-        build_api_docker.sh
-        deploy_api_to_lambda.sh
-
-        # Code quality
-        lint.sh
-
-        # Tests
-        run_prediction_tests.sh
-        run_validation_tests.sh
-        test_api.sh
-
-        # Training
-        train_character_predictor.sh
+```sh
+pipenv run training/run_experiment.py --save \
+  '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp",  "train_args": {"batch_size": 256}}'
 ```
 
-Main model and training code
+It will take a couple of minutes to train your model.
+
+Just for fun, you could also try a larger MLP, with a smaller batch size:
+
+```sh
+pipenv run training/run_experiment.py \
+  '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "network_args": {"num_layers": 8}, "train_args": {"batch_size": 128}}'
+```
+
+Let's also train a CNN on the same task.
+
+```sh
+pipenv run training/run_experiment.py '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "lenet", "train_args": {"epochs": 1}}'
+```
+
+Training the single epoch will take about 2 minutes (that's why we only do one epoch in this lab :)).
+Leave it running while we go on to the next part.
+
+It is very useful to be able to subsample the dataset for quick experiments.
+This is possibe by passing `subsample_fraction=0.1` (or some other fraction) at dataset initialization, or in `dataset_args` in the `run_experiment.py` dictionary, for example:
+
+```sh
+pipenv run training/run_experiment.py '{"dataset": "EmnistDataset", "dataset_args": {"subsample_fraction": 0.1}, "model": "CharacterModel", "network": "lenet"}'
+```
+
+## Testing
+
+First, let's take a look at how the test works at
 
 ```
-    text_recognizer/                # Package that can be deployed as a self-contained prediction system
-        __init__.py
-
-        character_predictor.py      # Takes a raw image and obtains a prediction
-        line_predictor.py
-
-        datasets/                   # Code for loading datasets
-            __init__.py
-            dataset.py              # Base class for datasets - logic for downloading data
-            emnist_dataset.py
-            emnist_essentials.json
-            dataset_sequence.py
-
-        models/                     # Code for instantiating models, including data preprocessing and loss functions
-            __init__.py
-            base.py                 # Base class for models
-            character_model.py
-
-        networks/                   # Code for building neural networks (i.e., 'dumb' input->output mappings) used by models
-            __init__.py
-            mlp.py
-
-        tests/
-            support/                        # Raw data used by tests
-            test_character_predictor.py     # Test model on a few key examples
-
-        weights/                            # Weights for production model
-            CharacterModel_EmnistDataset_mlp_weights.h5
-
-        util.py
-
-    training/                       # Code for running training experiments and selecting the best model.
-        gpu_util_sampler.py
-        run_experiment.py           # Parse experiment config and launch training.
-        util.py                     # Logic for training a model with a given config
+text_recognizer/tests/test_character_predictor.py
 ```
+
+Now let's see if it works by running:
+
+```sh
+pipenv run pytest -s text_recognizer/tests/test_character_predictor.py
+```
+
+Or, use the shorthand `tasks/test_functionality.sh`
+
+Testing should finish quickly.
