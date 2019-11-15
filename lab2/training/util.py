@@ -2,8 +2,7 @@
 from time import time
 from typing import Optional
 
-from tensorflow.keras.callbacks import EarlyStopping
-
+from tensorflow.keras.callbacks import EarlyStopping, Callback
 from text_recognizer.datasets.dataset import Dataset
 from text_recognizer.models.base import Model
 

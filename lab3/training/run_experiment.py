@@ -80,8 +80,7 @@ def run_experiment(experiment_config: Dict, save_weights: bool, gpu_ind: int, us
 
     # Hide lines below until Lab 3
     if use_wandb:
-        wandb.init()
-        wandb.config.update(experiment_config)
+        wandb.init(config=experiment_config)
     # Hide lines above until Lab 3
 
     train_model(

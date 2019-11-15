@@ -33,6 +33,7 @@ pyyaml = "*"
 redlock-py = "*"
 tornado = "*"
 scipy = "*"
+pillow = "*"
 wandb = "*"
 
 [requires]
