@@ -1,6 +1,5 @@
 """Function to train a model."""
 from time import time
-from typing import Optional
 
 from tensorflow.keras.callbacks import EarlyStopping, Callback
 from text_recognizer.datasets.dataset import Dataset
@@ -15,9 +14,9 @@ class WandbImageLogger(Callback):
 
     def __init__(self, model_wrapper: Model, dataset: Dataset, example_count: int = 36):
         self.model_wrapper = model_wrapper
-        self.val_images = dataset.x_test[:example_count]
+        self.val_images = dataset.x_test[:example_count]  # type: ignore
 
-    def on_epoch_end(self, *args):
+    def on_epoch_end(self, *args):  # pylint: disable=unused-argument
         images = [wandb.Image(image, caption="{}: {}".format(*self.model_wrapper.predict_on_image(image)))
                   for i, image in enumerate(self.val_images)]
         wandb.log({"examples": images}, commit=False)
@@ -32,7 +31,6 @@ def train_model(
         dataset: Dataset,
         epochs: int,
         batch_size: int,
-        gpu_ind: Optional[int] = None,
         use_wandb: bool = False) -> Model:
     """Train model."""
     callbacks = []

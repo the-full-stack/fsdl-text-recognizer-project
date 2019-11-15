@@ -1,6 +1,5 @@
 """Function to train a model."""
 from time import time
-from typing import Optional
 
 from tensorflow.keras.callbacks import EarlyStopping, Callback
 from text_recognizer.datasets.dataset import Dataset
@@ -15,7 +14,6 @@ def train_model(
         dataset: Dataset,
         epochs: int,
         batch_size: int,
-        gpu_ind: Optional[int] = None,
         use_wandb: bool = False) -> Model:
     """Train model."""
     callbacks = []

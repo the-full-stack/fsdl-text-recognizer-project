@@ -88,7 +88,6 @@ def run_experiment(experiment_config: Dict, save_weights: bool, gpu_ind: int, us
         dataset,
         epochs=experiment_config['train_args']['epochs'],
         batch_size=experiment_config['train_args']['batch_size'],
-        gpu_ind=gpu_ind,
         use_wandb=use_wandb
     )
     score = model.evaluate(dataset.x_test, dataset.y_test)
