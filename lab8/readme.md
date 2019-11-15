@@ -99,7 +99,14 @@ In this lab, we will deploy the app as a package to AWS Lambda.
 
 To deploy to AWS Lambda, we are going to use the `serverless` framework.
 
-First, let's go into the `api` directory and install the dependencies for serverless:
+First, we need to get the production requirements, replacing `tensorflow-gpu` with simple `tensorflow`.
+
+```sh
+pipenv lock --requirements --keep-outdated > api/requirements.txt
+sed -i 's/tensorflow-gpu/tensorflow/' api/requirements.txt
+```
+
+Now let's go into the `api` directory and install the dependencies for serverless:
 
 ```sh
 cd api
