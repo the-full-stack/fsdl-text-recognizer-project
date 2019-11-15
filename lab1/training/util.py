@@ -2,11 +2,13 @@
 from time import time
 
 from tensorflow.keras.callbacks import EarlyStopping, Callback
+
 from text_recognizer.datasets.dataset import Dataset
 from text_recognizer.models.base import Model
 
-
 EARLY_STOPPING = True
+
+
 
 
 def train_model(
