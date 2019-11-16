@@ -7,7 +7,7 @@ parameters:
   dataset:
     value: IamLinesDataset
   model:
-    value: LineModel
+    value: LineModelCtc
   network:
     value: line_lstm_ctc
   network_args.window_width:
