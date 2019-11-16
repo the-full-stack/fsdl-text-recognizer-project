@@ -17,7 +17,7 @@ EARLY_STOPPING = True
 class WandbImageLogger(Callback):
     """Custom callback for logging image predictions"""
 
-    def __init__(self, model_wrapper: Model, dataset: Dataset, example_count: int = 36):
+    def __init__(self, model_wrapper: Model, dataset: Dataset, example_count: int = 4):
         self.model_wrapper = model_wrapper
         self.val_images = dataset.x_test[:example_count]  # type: ignore
 

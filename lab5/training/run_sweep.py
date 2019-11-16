@@ -10,14 +10,10 @@ from ast import literal_eval
 default_config = {
     "dataset": "IamLinesDataset",
     "dataset_args": {
-        "max_overlap": 0.4,
+        "subsample_fraction": 0.33,
     },
-    "model": "LineModelCtc",
+    "model": "LineModel",
     "network": "line_lstm_ctc",
-    "network_args": {
-        "window_width": 14,
-        "window_stride": 7
-    },
     "train_args": {
         "batch_size": 128,
         "epochs": 5

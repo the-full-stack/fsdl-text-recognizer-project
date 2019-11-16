@@ -1,0 +1,18 @@
+program: training/run_sweep.py
+method: grid
+metric:
+  name: val_loss
+  goal: minimize
+parameters:
+  dataset:
+    value: IamLinesDataset
+  model:
+    value: LineModel
+  network:
+    value: line_cnn_all_conv
+  network_args.window_width:
+    values: [14, 18]
+  network_args.window_stride:
+    values: [5, 7] # careful with these
+  train_args.batch_size:
+    values: [64, 128]
