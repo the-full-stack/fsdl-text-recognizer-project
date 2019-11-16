@@ -4,8 +4,6 @@ metric:
   name: val_loss
   goal: minimize
 parameters:
-  dataset_args.max_overlap:
-    values: [0.1, 0.4, 0.7]
   network_args.window_width:
     values: [10, 20]
   network_args.window_stride:

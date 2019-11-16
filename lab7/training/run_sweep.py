@@ -20,7 +20,7 @@ default_config = {
     },
     "train_args": {
         "batch_size": 128,
-        "epochs": 10
+        "epochs": 5
     }
 }
 

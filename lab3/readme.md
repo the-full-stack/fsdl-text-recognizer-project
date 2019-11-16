@@ -18,20 +18,25 @@ cd lab3/
 
 ## Intro to Weights & Biases
 
+Weights & Biases is an experiment tracking tool that ensures you never lose track of your progress.
+
 ### Motivation for W&B
+
 - Keep track of all experiments in one place
 - Easily compare runs
+- Create reports to document your progress
 - Look at results from the whole team
 
 ### Let's get started with W&B!
 
-NOTE: These instructions are optional if you're working in the pre-configured Jupyter hub.
+> NOTE: These instructions are optional if you're working in the pre-configured Jupyter hub.
 
 ```
 pipenv run wandb init
 ```
 
 You should see something like:
+
 ```
 ? Which team should we use? (Use arrow keys)
 > your_username
@@ -44,6 +49,7 @@ Select your username.
 Which project should we use?
 > Create New
 ```
+
 Select `fsdl-text-recognizer-project`.
 
 How to implement W&B in training code?
@@ -61,8 +67,9 @@ tasks/train_character_predictor.sh
 You should see:
 
 ```
-wandb: Started W&B process version 0.6.17 with PID <xxxx>
-wandb: Syncing https://api.wandb.ai/<USERNAME>/fsdl-text-recognizer-project/runs/<xxxxxx>
+wandb: Tracking run with wandb version 0.8.15
+wandb: Run data is saved locally in wandb/run-20191116_020355-1n7aaz5g
+wandb: Syncing run flowing-waterfall-1
 ```
 
 Click the link to see your run train.
@@ -79,15 +86,17 @@ Click the link to see your run train.
 pipenv run python training/run_experiment.py --save '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "train_args": {"batch_size": 512}}' --gpu=1
 ```
 
-Check out both runs at https://app.wandb.ai
+Check out both runs at https://app.wandb.ai/<USERNAME>/fsdl-text-recognizer-project
 
 ### Automatically running multiple experiments
 
 Desiderata for single-machine parallel experimentation code
+
 - Define multiple experiments and run them simultaneously on all available GPUs
 - Run more experiments than GPUs and automatically queue up extras
 
 Let's look at a simple implementation of these:
+
 - Look at `training/prepare_experiments.py`
 - Look at `training/gpu_manager.py`
 
