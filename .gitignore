@@ -46,7 +46,8 @@ var/
 
 # W&B
 wandb-debug.log
-wandb
+wandb/*
+!wandb/settings
 
 # Misc
 .DS_Store

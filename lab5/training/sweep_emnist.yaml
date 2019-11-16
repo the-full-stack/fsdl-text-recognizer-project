@@ -1,0 +1,22 @@
+program: training/run_sweep.py
+method: grid
+metric:
+  name: val_loss
+  goal: minimize
+parameters:
+  dataset:
+    value: EmnistDataset
+  model:
+    value: CharacterModel
+  network:
+    value: mlp
+  network_args.layer_size:
+    values: [128, 256]
+  network_args.dropout_amount:
+    values: [0.2, 0.4]
+  network_args.num_layers:
+    values: [3, 6]
+  train_args.batch_size:
+    values: [64, 128]
+  train_args.epochs:
+    value: 5

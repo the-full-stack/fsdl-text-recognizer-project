@@ -1,0 +1,5 @@
+[default]
+entity = fsdl
+project = fsdl-text-recognizer-nov2019
+base_url = https://api.wandb.ai
+
