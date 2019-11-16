@@ -39,7 +39,7 @@ Training longer will keep improving: the same settings get to 60% accuracy in 40
 
 For the rest of the lab, let's play around with different things and see if we can improve performance quickly.
 
-You can see all of our training runs here: https://app.wandb.ai/fsdl/fsdl-text-recognizer-project
+You can see all of our training runs here: https://app.wandb.ai/fsdl/fsdl-text-recognizer-nov16
 Feel free to peek in on your neighbors!
 
 If you commit and push your code changes, then the run will also be linked to the exact code your ran, which you will be able to review months later if necessary.

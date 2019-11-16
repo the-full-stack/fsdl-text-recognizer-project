@@ -1,17 +1,19 @@
 # pylint: skip-file
 import os
+import signal
+import subprocess
 import sys
 import json
 from typing import Tuple
 from ast import literal_eval
 
 default_config = {
-    "dataset": "EmnistLinesDataset",
+    "dataset": "IamLinesDataset",
     "dataset_args": {
         "max_overlap": 0.4,
     },
-    "model": "LineModel",
-    "network": "line_cnn_all_conv",
+    "model": "LineModelCtc",
+    "network": "line_lstm_ctc",
     "network_args": {
         "window_width": 14,
         "window_stride": 7
@@ -65,7 +67,9 @@ def args_to_json(default_config: dict, preserve_args: list = ["gpu", "save"]) ->
 
 
 if __name__ == "__main__":
-    for key, val in os.environ.items():
-        os.putenv(key, val)
     config, args = args_to_json(default_config)
-    os.system("python training/run_experiment.py {} '{}'".format((" ").join(args), json.dumps(config)))  # nosec
+    env = {k: v for k, v in os.environ.items() if k not in ("WANDB_PROGRAM", "WANDB_ARGS")}
+    run = subprocess.Popen(["python", "training/run_experiment.py", *args, json.dumps(config)],
+                           env=env, preexec_fn=os.setsid)  # nosec
+    signal.signal(signal.SIGTERM, lambda *args: run.terminate())
+    run.wait()

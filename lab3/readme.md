@@ -25,6 +25,8 @@ cd lab3/
 
 ### Let's get started with W&B!
 
+NOTE: These instructions are optional if you're working in the pre-configured Jupyter hub.
+
 ```
 pipenv run wandb init
 ```
@@ -46,7 +48,7 @@ Select `fsdl-text-recognizer-project`.
 
 How to implement W&B in training code?
 
-Look at `training/run_experiment.py`.
+Look at `training/run_experiment.py` and `training/util.py`
 
 ### Your first W&B experiment
 
