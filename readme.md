@@ -21,8 +21,8 @@ Project developed during lab sessions of the [Full Stack Deep Learning Bootcamp]
   - [Lab 1](lab1.md) (20 min): Introduce EMNIST. Training code details. Train & evaluate character prediction baselines.
   - [Lab 2](lab2.md) (30 min): Introduce EMNIST Lines. Overview of CTC loss and model architecture. Train our model on EMNIST Lines.
 - Second session (60 min)
-  - [Lab 3](lab3.md) (40 min): Weights & Biases + parallel experiments + hyperparameter sweeps.
-  - [Lab 4](lab4.md) (20 min): IAM Lines and experimentation time (launch a bunch of experiments, leave running overnight).
+  - [Lab 3](lab3.md) (40 min): Weights & Biases + parallel experiments
+  - [Lab 4](lab4.md) (20 min): IAM Lines and experimentation time (hyperparameter sweeps, leave running overnight).
 - Third session (90 min)
   - Review results from the class on W&B
   - [Lab 5](lab5.md) (45 min) Train & evaluate line detection model.
