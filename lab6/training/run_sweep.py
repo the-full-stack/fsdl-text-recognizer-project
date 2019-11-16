@@ -16,7 +16,7 @@ default_config = {
     "network": "line_lstm_ctc",
     "train_args": {
         "batch_size": 128,
-        "epochs": 5
+        "epochs": 10
     }
 }
 
