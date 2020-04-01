@@ -10,9 +10,9 @@ import toml
 from text_recognizer.datasets.dataset import Dataset, _download_raw_dataset
 
 
-RAW_DATA_DIRNAME = Dataset.data_dirname() / 'raw' / 'iam'
-METADATA_FILENAME = RAW_DATA_DIRNAME / 'metadata.toml'
-EXTRACTED_DATASET_DIRNAME = RAW_DATA_DIRNAME / 'iamdb'
+RAW_DATA_DIRNAME = Dataset.data_dirname() / "raw" / "iam"
+METADATA_FILENAME = RAW_DATA_DIRNAME / "metadata.toml"
+EXTRACTED_DATASET_DIRNAME = RAW_DATA_DIRNAME / "iamdb"
 
 DOWNSAMPLE_FACTOR = 2  # If images were downsampled, the regions must also be.
 LINE_REGION_PADDING = 0  # add this many pixels around the exact coordinates
@@ -31,6 +31,7 @@ class IamDataset(Dataset):
         The test set has 1,861 lines from 128 writers.
         The text lines of all data sets are mutually exclusive, thus each writer has contributed to one set only.
     """
+
     def __init__(self):
         self.metadata = toml.load(METADATA_FILENAME)
 
@@ -40,11 +41,11 @@ class IamDataset(Dataset):
 
     @property
     def xml_filenames(self):
-        return list((EXTRACTED_DATASET_DIRNAME / 'xml').glob('*.xml'))
+        return list((EXTRACTED_DATASET_DIRNAME / "xml").glob("*.xml"))
 
     @property
     def form_filenames(self):
-        return list((EXTRACTED_DATASET_DIRNAME / 'forms').glob('*.jpg'))
+        return list((EXTRACTED_DATASET_DIRNAME / "forms").glob("*.jpg"))
 
     def _download_iam(self):
         curdir = os.getcwd()
@@ -60,61 +61,55 @@ class IamDataset(Dataset):
     @cachedproperty
     def line_strings_by_id(self):
         """Return a dict from name of IAM form to a list of line texts in it."""
-        return {
-            filename.stem: _get_line_strings_from_xml_file(filename)
-            for filename in self.xml_filenames
-        }
+        return {filename.stem: _get_line_strings_from_xml_file(filename) for filename in self.xml_filenames}
 
     @cachedproperty
     def line_regions_by_id(self):
         """Return a dict from name of IAM form to a list of (x1, x2, y1, y2) coordinates of all lines in it."""
-        return {
-            filename.stem: _get_line_regions_from_xml_file(filename)
-            for filename in self.xml_filenames
-        }
+        return {filename.stem: _get_line_regions_from_xml_file(filename) for filename in self.xml_filenames}
 
     def __repr__(self):
         """Print info about the dataset."""
-        return (
-            'IAM Dataset\n'
-            f'Num forms: {len(self.xml_filenames)}\n'
-        )
+        return "IAM Dataset\n" f"Num forms: {len(self.xml_filenames)}\n"
 
 
 def _extract_raw_dataset(metadata):
-    print('Extracting IAM data')
-    with zipfile.ZipFile(metadata['filename'], 'r') as zip_file:
+    print("Extracting IAM data")
+    with zipfile.ZipFile(metadata["filename"], "r") as zip_file:
         zip_file.extractall()
 
 
 def _get_line_strings_from_xml_file(filename: str) -> List[str]:
     """Get the text content of each line. Note that we replace &quot; with "."""
     xml_root_element = ElementTree.parse(filename).getroot()  # nosec
-    xml_line_elements = xml_root_element.findall('handwritten-part/line')
-    return [el.attrib['text'].replace('&quot;', '"') for el in xml_line_elements]
+    xml_line_elements = xml_root_element.findall("handwritten-part/line")
+    return [el.attrib["text"].replace("&quot;", '"') for el in xml_line_elements]
 
 
 def _get_line_regions_from_xml_file(filename: str) -> List[Dict[str, int]]:
     """Get the line region dict for each line."""
     xml_root_element = ElementTree.parse(filename).getroot()  # nosec
-    xml_line_elements = xml_root_element.findall('handwritten-part/line')
+    xml_line_elements = xml_root_element.findall("handwritten-part/line")
     return [_get_line_region_from_xml_element(el) for el in xml_line_elements]
 
 
 def _get_line_region_from_xml_element(xml_line) -> Dict[str, int]:
     """
-    line (xml element): has x, y, width, and height attributes
+    Parameters
+    ----------
+    xml_line
+        xml element that has x, y, width, and height attributes
     """
-    word_elements = xml_line.findall('word/cmp')
-    x1s = [int(el.attrib['x']) for el in word_elements]
-    y1s = [int(el.attrib['y']) for el in word_elements]
-    x2s = [int(el.attrib['x']) + int(el.attrib['width']) for el in word_elements]
-    y2s = [int(el.attrib['y']) + int(el.attrib['height']) for el in word_elements]
+    word_elements = xml_line.findall("word/cmp")
+    x1s = [int(el.attrib["x"]) for el in word_elements]
+    y1s = [int(el.attrib["y"]) for el in word_elements]
+    x2s = [int(el.attrib["x"]) + int(el.attrib["width"]) for el in word_elements]
+    y2s = [int(el.attrib["y"]) + int(el.attrib["height"]) for el in word_elements]
     return {
-        'x1': min(x1s) // DOWNSAMPLE_FACTOR - LINE_REGION_PADDING,
-        'y1': min(y1s) // DOWNSAMPLE_FACTOR - LINE_REGION_PADDING,
-        'x2': max(x2s) // DOWNSAMPLE_FACTOR + LINE_REGION_PADDING,
-        'y2': max(y2s) // DOWNSAMPLE_FACTOR + LINE_REGION_PADDING
+        "x1": min(x1s) // DOWNSAMPLE_FACTOR - LINE_REGION_PADDING,
+        "y1": min(y1s) // DOWNSAMPLE_FACTOR - LINE_REGION_PADDING,
+        "x2": max(x2s) // DOWNSAMPLE_FACTOR + LINE_REGION_PADDING,
+        "y2": max(y2s) // DOWNSAMPLE_FACTOR + LINE_REGION_PADDING,
     }
 
 
@@ -124,5 +119,5 @@ def main():
     print(dataset)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

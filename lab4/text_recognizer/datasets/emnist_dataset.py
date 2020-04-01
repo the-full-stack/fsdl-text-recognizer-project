@@ -17,13 +17,13 @@ from text_recognizer.datasets.dataset import _download_raw_dataset, Dataset, _pa
 
 SAMPLE_TO_BALANCE = True  # If true, take at most the mean number of instances per class.
 
-RAW_DATA_DIRNAME = Dataset.data_dirname() / 'raw' / 'emnist'
-METADATA_FILENAME = RAW_DATA_DIRNAME / 'metadata.toml'
+RAW_DATA_DIRNAME = Dataset.data_dirname() / "raw" / "emnist"
+METADATA_FILENAME = RAW_DATA_DIRNAME / "metadata.toml"
 
-PROCESSED_DATA_DIRNAME = Dataset.data_dirname() / 'processed' / 'emnist'
-PROCESSED_DATA_FILENAME = PROCESSED_DATA_DIRNAME / 'byclass.h5'
+PROCESSED_DATA_DIRNAME = Dataset.data_dirname() / "processed" / "emnist"
+PROCESSED_DATA_FILENAME = PROCESSED_DATA_DIRNAME / "byclass.h5"
 
-ESSENTIALS_FILENAME = Path(__file__).parents[0].resolve() / 'emnist_essentials.json'
+ESSENTIALS_FILENAME = Path(__file__).parents[0].resolve() / "emnist_essentials.json"
 
 
 class EmnistDataset(Dataset):
@@ -35,15 +35,16 @@ class EmnistDataset(Dataset):
     The data split we will use is
     EMNIST ByClass: 814,255 characters. 62 unbalanced classes.
     """
+
     def __init__(self, subsample_fraction: float = None):
         if not os.path.exists(ESSENTIALS_FILENAME):
             _download_and_process_emnist()
         with open(ESSENTIALS_FILENAME) as f:
             essentials = json.load(f)
-        self.mapping = _augment_emnist_mapping(dict(essentials['mapping']))
+        self.mapping = _augment_emnist_mapping(dict(essentials["mapping"]))
         self.inverse_mapping = {v: k for k, v in self.mapping.items()}
         self.num_classes = len(self.mapping)
-        self.input_shape = essentials['input_shape']
+        self.input_shape = essentials["input_shape"]
         self.output_shape = (self.num_classes,)
 
         self.subsample_fraction = subsample_fraction
@@ -55,11 +56,11 @@ class EmnistDataset(Dataset):
     def load_or_generate_data(self):
         if not os.path.exists(PROCESSED_DATA_FILENAME):
             _download_and_process_emnist()
-        with h5py.File(PROCESSED_DATA_FILENAME, 'r') as f:
-            self.x_train = f['x_train'][:]
-            self.y_train_int = f['y_train'][:]
-            self.x_test = f['x_test'][:]
-            self.y_test_int = f['y_test'][:]
+        with h5py.File(PROCESSED_DATA_FILENAME, "r") as f:
+            self.x_train = f["x_train"][:]
+            self.y_train_int = f["y_train"][:]
+            self.x_test = f["x_test"][:]
+            self.y_test_int = f["y_test"][:]
         self._subsample()
 
     def _subsample(self):
@@ -83,10 +84,10 @@ class EmnistDataset(Dataset):
 
     def __repr__(self):
         return (
-            'EMNIST Dataset\n'
-            f'Num classes: {self.num_classes}\n'
-            f'Mapping: {self.mapping}\n'
-            f'Input shape: {self.input_shape}\n'
+            "EMNIST Dataset\n"
+            f"Num classes: {self.num_classes}\n"
+            f"Mapping: {self.mapping}\n"
+            f"Input shape: {self.input_shape}\n"
         )
 
 
@@ -95,46 +96,47 @@ def _download_and_process_emnist():
     curdir = os.getcwd()
     os.chdir(RAW_DATA_DIRNAME)
     _download_raw_dataset(metadata)
-    _process_raw_dataset(metadata['filename'])
+    _process_raw_dataset(metadata["filename"])
     os.chdir(curdir)
 
 
 def _process_raw_dataset(filename: str):
-    print('Unzipping EMNIST...')
-    zip_file = zipfile.ZipFile(filename, 'r')
-    zip_file.extract('matlab/emnist-byclass.mat')
+    print("Unzipping EMNIST...")
+    zip_file = zipfile.ZipFile(filename, "r")
+    zip_file.extract("matlab/emnist-byclass.mat")
 
     from scipy.io import loadmat  # pylint: disable=import-outside-toplevel
+
     # NOTE: If importing at the top of module, would need to list scipy as prod dependency.
 
-    print('Loading training data from .mat file')
-    data = loadmat('matlab/emnist-byclass.mat')
-    x_train = data['dataset']['train'][0, 0]['images'][0, 0].reshape(-1, 28, 28).swapaxes(1, 2)
-    y_train = data['dataset']['train'][0, 0]['labels'][0, 0]
-    x_test = data['dataset']['test'][0, 0]['images'][0, 0].reshape(-1, 28, 28).swapaxes(1, 2)
-    y_test = data['dataset']['test'][0, 0]['labels'][0, 0]
+    print("Loading training data from .mat file")
+    data = loadmat("matlab/emnist-byclass.mat")
+    x_train = data["dataset"]["train"][0, 0]["images"][0, 0].reshape(-1, 28, 28).swapaxes(1, 2)
+    y_train = data["dataset"]["train"][0, 0]["labels"][0, 0]
+    x_test = data["dataset"]["test"][0, 0]["images"][0, 0].reshape(-1, 28, 28).swapaxes(1, 2)
+    y_test = data["dataset"]["test"][0, 0]["labels"][0, 0]
 
     if SAMPLE_TO_BALANCE:
-        print('Balancing classes to reduce amount of data')
+        print("Balancing classes to reduce amount of data")
         x_train, y_train = _sample_to_balance(x_train, y_train)
         x_test, y_test = _sample_to_balance(x_test, y_test)
 
-    print('Saving to HDF5 in a compressed format...')
+    print("Saving to HDF5 in a compressed format...")
     PROCESSED_DATA_DIRNAME.mkdir(parents=True, exist_ok=True)
-    with h5py.File(PROCESSED_DATA_FILENAME, 'w') as f:
-        f.create_dataset('x_train', data=x_train, dtype='u1', compression='lzf')
-        f.create_dataset('y_train', data=y_train, dtype='u1', compression='lzf')
-        f.create_dataset('x_test', data=x_test, dtype='u1', compression='lzf')
-        f.create_dataset('y_test', data=y_test, dtype='u1', compression='lzf')
+    with h5py.File(PROCESSED_DATA_FILENAME, "w") as f:
+        f.create_dataset("x_train", data=x_train, dtype="u1", compression="lzf")
+        f.create_dataset("y_train", data=y_train, dtype="u1", compression="lzf")
+        f.create_dataset("x_test", data=x_test, dtype="u1", compression="lzf")
+        f.create_dataset("y_test", data=y_test, dtype="u1", compression="lzf")
 
-    print('Saving essential dataset parameters to text_recognizer/datasets...')
-    mapping = {int(k): chr(v) for k, v in data['dataset']['mapping'][0, 0]}
-    essentials = {'mapping': list(mapping.items()), 'input_shape': list(x_train.shape[1:])}
-    with open(ESSENTIALS_FILENAME, 'w') as f:
+    print("Saving essential dataset parameters to text_recognizer/datasets...")
+    mapping = {int(k): chr(v) for k, v in data["dataset"]["mapping"][0, 0]}
+    essentials = {"mapping": list(mapping.items()), "input_shape": list(x_train.shape[1:])}
+    with open(ESSENTIALS_FILENAME, "w") as f:
         json.dump(essentials, f)
 
-    print('Cleaning up...')
-    shutil.rmtree('matlab')
+    print("Cleaning up...")
+    shutil.rmtree("matlab")
 
 
 def _sample_to_balance(x, y):
@@ -155,10 +157,28 @@ def _sample_to_balance(x, y):
 def _augment_emnist_mapping(mapping):
     """Augment the mapping with extra symbols."""
     # Extra symbols in IAM dataset
-    extra_symbols = [' ', '!', '"', '#', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '?']
+    extra_symbols = [
+        " ",
+        "!",
+        '"',
+        "#",
+        "&",
+        "'",
+        "(",
+        ")",
+        "*",
+        "+",
+        ",",
+        "-",
+        ".",
+        "/",
+        ":",
+        ";",
+        "?",
+    ]
 
     # padding symbol
-    extra_symbols.append('_')
+    extra_symbols.append("_")
 
     max_key = max(mapping.keys())
     extra_mapping = {}
@@ -179,5 +199,5 @@ def main():
     print(dataset.x_test.shape, dataset.y_test.shape)  # pylint: disable=E1101
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

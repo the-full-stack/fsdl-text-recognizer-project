@@ -12,8 +12,8 @@ def _shuffle(x, y):
 class DatasetSequence(Sequence):
     """
     Minimal implementation of https://keras.io/utils/#sequence.
-    Allows easy use of fit_generator in training.
     """
+
     def __init__(self, x, y, batch_size=32, augment_fn=None, format_fn=None):
         self.x = x
         self.y = y

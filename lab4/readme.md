@@ -32,7 +32,7 @@ cd lab4/
 Let's train with the default params by running `tasks/train_lstm_line_predictor_on_iam.sh`, which runs the following command:
 
 ```bash
-pipenv run python training/run_experiment.py --save '{"dataset": "IamLinesDataset", "model": "LineModelCtc", "network": "line_lstm_ctc"}'
+python training/run_experiment.py --save '{"dataset": "IamLinesDataset", "model": "LineModelCtc", "network": "line_lstm_ctc"}'
 ```
 
 This uses our LSTM with CTC model. 8 epochs gets accuracy of 40% and takes about 10 minutes.
@@ -44,7 +44,7 @@ Training longer will keep improving: the same settings get to 60% accuracy in 40
 Sweeps enable automated trials of hyper-parameters. W&B provides built in support for running [sweeps](https://docs.wandb.com/library/sweeps). We've setup an initial configuration file for sweeps in `training/sweeps.yaml`. It performs a basic grid search across 3 parameters. There are lots of different [configuration options](https://docs.wandb.com/library/sweeps/configuration) for defining more complex sweeps. Anytime you modify this configuration you'll need to create a sweep in wandb by running:
 
 ```bash
-pipenv run wandb sweep training/sweep.yaml
+wandb sweep training/sweep.yaml
 ```
 
 ```text
@@ -59,7 +59,7 @@ Take note of the 8 character ID that's returned by this command. It's best to st
 To run a sweep you can start multiple agents to query for and run the next set of parameters. This is done with the command:
 
 ```bash
-pipenv run wandb agent $SWEEP_ID
+wandb agent $SWEEP_ID
 ```
 
 This will print a url to W&B which you can use to monitor or control the sweep.

@@ -9,6 +9,7 @@ import text_recognizer.util as util
 
 class CharacterPredictor:
     """Given an image of a single handwritten character, recognizes it."""
+
     def __init__(self):
         self.model = CharacterModel()
         self.model.load_weights()

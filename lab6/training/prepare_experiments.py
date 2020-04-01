@@ -8,11 +8,11 @@ def run_experiments(experiments_filename):
     """Run experiments from file."""
     with open(experiments_filename) as f:
         experiments_config = json.load(f)
-    num_experiments = len(experiments_config['experiments'])
+    num_experiments = len(experiments_config["experiments"])
     for ind in range(num_experiments):
-        experiment_config = experiments_config['experiments'][ind]
-        experiment_config['experiment_group'] = experiments_config['experiment_group']
-        print(f"pipenv run python training/run_experiment.py --gpu=-1 '{json.dumps(experiment_config)}'")
+        experiment_config = experiments_config["experiments"][ind]
+        experiment_config["experiment_group"] = experiments_config["experiment_group"]
+        print(f"python training/run_experiment.py --gpu=-1 '{json.dumps(experiment_config)}'")
 
 
 def main():
@@ -23,5 +23,5 @@ def main():
     run_experiments(args.experiments_filename)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -6,14 +6,14 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.6.8
+      - image: circleci/python:3.7
 
     steps:
       - checkout
 
       - restore_cache:
           keys:
-          - cache-{{ checksum "Pipfile.lock" }}
+          - cache-{{ checksum "requirements.txt" }}-{{ checksum "requirements-dev.txt" }}
 
       - run:
           name: Install Git LFS
@@ -37,15 +37,14 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            sudo pip install --upgrade pip
-            sudo pip install pipenv
-            sed -i 's/tensorflow-gpu/tensorflow/' Pipfile
-            pipenv install --dev
+            sed -i 's/tensorflow/tensorflow-cpu/' requirements.txt
+            pip install -r requirements.txt
+            pip install -r requirements-dev.txt
 
       - save_cache:
-          key: cache-{{ checksum "Pipfile.lock" }}
-          paths:
-            - ~/.local
+        key: cache-{{ checksum "requirements.txt" }}-{{ checksum "requirements-dev.txt" }}
+        paths:
+          - ~/.local
 
       - run:
           name: run linting
@@ -57,12 +56,12 @@ jobs:
           name: run prediction tests
           when: always
           command: |
-            cd lab8 && PYTHONPATH=. pipenv run pytest -s text_recognizer/tests/*
+            cd lab8 && PYTHONPATH=. pytest -s text_recognizer/tests/*
 
       - run:
           name: run evaluation tests
           command: |
-            cd lab8 && PYTHONPATH=. pipenv run pytest -s evaluation/*
+            cd lab8 && PYTHONPATH=. pytest -s evaluation/*
 
       - store_artifacts:
           path: test-reports

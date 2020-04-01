@@ -1,9 +1,5 @@
-# Start from the latest Long Term Support (LTS) Ubuntu version
-FROM ubuntu:18.04
-
-# Install pipenv
-RUN apt-get update
-RUN apt-get install -y python3-pip
+# The "buster" flavor of the official docker Python image is based on Debian and includes common packages.
+FROM python:3.7-buster
 
 # Create the working directory
 RUN set -ex && mkdir /repo

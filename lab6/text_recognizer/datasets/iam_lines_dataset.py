@@ -14,9 +14,9 @@ from text_recognizer.datasets.dataset import Dataset, _parse_args
 from text_recognizer.datasets.emnist_dataset import EmnistDataset
 
 
-PROCESSED_DATA_DIRNAME = Dataset.data_dirname() / 'processed' / 'iam_lines'
-PROCESSED_DATA_FILENAME = PROCESSED_DATA_DIRNAME / 'iam_lines.h5'
-PROCESSED_DATA_URL = 'https://s3-us-west-2.amazonaws.com/fsdl-public-assets/iam_lines.h5'
+PROCESSED_DATA_DIRNAME = Dataset.data_dirname() / "processed" / "iam_lines"
+PROCESSED_DATA_FILENAME = PROCESSED_DATA_DIRNAME / "iam_lines.h5"
+PROCESSED_DATA_URL = "https://s3-us-west-2.amazonaws.com/fsdl-public-assets/iam_lines.h5"
 
 
 class IamLinesDataset(Dataset):
@@ -24,6 +24,7 @@ class IamLinesDataset(Dataset):
 
     Note that we use cachedproperty because data takes time to load.
     """
+
     def __init__(self, subsample_fraction: float = None):
         self.mapping = EmnistDataset().mapping
         self.inverse_mapping = {v: k for k, v in self.mapping.items()}
@@ -41,13 +42,13 @@ class IamLinesDataset(Dataset):
         """Load or generate dataset data."""
         if not PROCESSED_DATA_FILENAME.exists():
             PROCESSED_DATA_DIRNAME.mkdir(parents=True, exist_ok=True)
-            print('Downloading IAM lines...')
+            print("Downloading IAM lines...")
             util.download_url(PROCESSED_DATA_URL, PROCESSED_DATA_FILENAME)
-        with h5py.File(PROCESSED_DATA_FILENAME, 'r') as f:
-            self.x_train = f['x_train'][:]
-            self.y_train_int = f['y_train'][:]
-            self.x_test = f['x_test'][:]
-            self.y_test_int = f['y_test'][:]
+        with h5py.File(PROCESSED_DATA_FILENAME, "r") as f:
+            self.x_train = f["x_train"][:]
+            self.y_train_int = f["y_train"][:]
+            self.x_test = f["x_test"][:]
+            self.y_test_int = f["y_test"][:]
         self._subsample()
 
     def _subsample(self):
@@ -74,11 +75,11 @@ class IamLinesDataset(Dataset):
     def __repr__(self):
         """Print info about the dataset."""
         return (
-            'IAM Lines Dataset\n'  # pylint: disable=no-member
-            f'Num classes: {self.num_classes}\n'
-            f'Mapping: {self.mapping}\n'
-            f'Train: {self.x_train.shape} {self.y_train.shape}\n'
-            f'Test: {self.x_test.shape} {self.y_test.shape}\n'
+            "IAM Lines Dataset\n"  # pylint: disable=no-member
+            f"Num classes: {self.num_classes}\n"
+            f"Mapping: {self.mapping}\n"
+            f"Train: {self.x_train.shape} {self.y_train.shape}\n"
+            f"Test: {self.x_test.shape} {self.y_test.shape}\n"
         )
 
 
@@ -90,5 +91,5 @@ def main():
     print(dataset)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

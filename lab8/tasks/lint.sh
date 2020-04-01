@@ -4,23 +4,23 @@ set +e
 
 FAILURE=false
 
-echo "pipenv check"
-pipenv check  # Not reporting failure here, because sometimes this fails due to API request limit
+echo "safety"
+safety check -r requirements.txt -r requirements-dev.txt || FAILURE=true
 
 echo "pylint"
-pipenv run pylint --ignore=.serverless api text_recognizer training || FAILURE=true
+pylint --ignore=.serverless api text_recognizer training || FAILURE=true
 
 echo "pycodestyle"
-pipenv run pycodestyle --exclude=node_modules,.serverless,.ipynb_checkpoints api text_recognizer training || FAILURE=true
+pycodestyle --exclude=node_modules,.serverless,.ipynb_checkpoints api text_recognizer training || FAILURE=true
 
-# echo "pydocstyle"
-# pipenv run pydocstyle pandagrader projects lambda_deployment || FAILURE=true
+echo "pydocstyle"
+pydocstyle api text_recognizer training || FAILURE=true
 
 echo "mypy"
-pipenv run mypy api text_recognizer training || FAILURE=true
+mypy api text_recognizer training || FAILURE=true
 
 echo "bandit"
-pipenv run bandit -ll -r {api,text_recognizer,training} -x node_modules,.serverless || FAILURE=true
+bandit -ll -r {api,text_recognizer,training} -x node_modules,.serverless || FAILURE=true
 
 echo "shellcheck"
 shellcheck tasks/*.sh || FAILURE=true

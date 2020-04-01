@@ -8,11 +8,11 @@ from text_recognizer.datasets.dataset import Dataset, _parse_args
 from text_recognizer.datasets.iam_dataset import IamDataset
 from text_recognizer import util
 
-INTERIM_DATA_DIRNAME = Dataset.data_dirname() / 'interim' / 'iam_paragraphs'
-DEBUG_CROPS_DIRNAME = INTERIM_DATA_DIRNAME / 'debug_crops'
-PROCESSED_DATA_DIRNAME = Dataset.data_dirname() / 'processed' / 'iam_paragraphs'
-CROPS_DIRNAME = PROCESSED_DATA_DIRNAME / 'crops'
-GT_DIRNAME = PROCESSED_DATA_DIRNAME / 'gt'
+INTERIM_DATA_DIRNAME = Dataset.data_dirname() / "interim" / "iam_paragraphs"
+DEBUG_CROPS_DIRNAME = INTERIM_DATA_DIRNAME / "debug_crops"
+PROCESSED_DATA_DIRNAME = Dataset.data_dirname() / "processed" / "iam_paragraphs"
+CROPS_DIRNAME = PROCESSED_DATA_DIRNAME / "crops"
+GT_DIRNAME = PROCESSED_DATA_DIRNAME / "gt"
 
 PARAGRAPH_BUFFER = 50  # pixels in the IAM form images to leave around the lines
 TEST_FRACTION = 0.2
@@ -22,6 +22,7 @@ class IamParagraphsDataset(Dataset):
     """
     Paragraphs from the IAM dataset.
     """
+
     def __init__(self, subsample_fraction: float = None):
         self.iam_dataset = IamDataset()
         self.iam_dataset.load_or_generate_data()
@@ -38,7 +39,7 @@ class IamParagraphsDataset(Dataset):
 
     def load_or_generate_data(self):
         """Load or generate dataset data."""
-        num_actual = len(list(CROPS_DIRNAME.glob('*.jpg')))
+        num_actual = len(list(CROPS_DIRNAME.glob("*.jpg")))
         num_target = len(self.iam_dataset.line_regions_by_id)
         if num_actual < num_target - 2:  # There are a couple of instances that could not be cropped
             self._process_iam_paragraphs()
@@ -85,7 +86,7 @@ class IamParagraphsDataset(Dataset):
         CROPS_DIRNAME.mkdir(parents=True, exist_ok=True)
         DEBUG_CROPS_DIRNAME.mkdir(parents=True, exist_ok=True)
         GT_DIRNAME.mkdir(parents=True, exist_ok=True)
-        print(f'Cropping paragraphs, generating ground truth, and saving debugging images to {DEBUG_CROPS_DIRNAME}')
+        print(f"Cropping paragraphs, generating ground truth, and saving debugging images to {DEBUG_CROPS_DIRNAME}")
         for filename in self.iam_dataset.form_filenames:
             id_ = filename.stem
             line_region = self.iam_dataset.line_regions_by_id[id_]
@@ -107,8 +108,8 @@ class IamParagraphsDataset(Dataset):
         max_crop_height = _get_max_paragraph_crop_height(self.iam_dataset.line_regions_by_id)
         assert max_crop_height <= max_crop_width
         crop_dims = (max_crop_width, max_crop_width)
-        print(f'Max crop width and height were found to be {max_crop_width}x{max_crop_height}.')
-        print(f'Setting them to {max_crop_width}x{max_crop_width}')
+        print(f"Max crop width and height were found to be {max_crop_width}x{max_crop_height}.")
+        print(f"Setting them to {max_crop_width}x{max_crop_width}")
         return crop_dims
 
     def _subsample(self):
@@ -123,18 +124,18 @@ class IamParagraphsDataset(Dataset):
     def __repr__(self):
         """Print info about the dataset."""
         return (
-            'IAM Paragraphs Dataset\n'  # pylint: disable=no-member
-            f'Num classes: {self.num_classes}\n'
-            f'Train: {self.x_train.shape} {self.y_train.shape}\n'
-            f'Test: {self.x_test.shape} {self.y_test.shape}\n'
+            "IAM Paragraphs Dataset\n"  # pylint: disable=no-member
+            f"Num classes: {self.num_classes}\n"
+            f"Train: {self.x_train.shape} {self.y_train.shape}\n"
+            f"Test: {self.x_test.shape} {self.y_test.shape}\n"
         )
 
 
 def _get_max_paragraph_crop_height(line_regions_by_id):
     heights = []
     for regions in line_regions_by_id.values():
-        min_y1 = min(r['y1'] for r in regions) - PARAGRAPH_BUFFER
-        max_y2 = max(r['y2'] for r in regions) + PARAGRAPH_BUFFER
+        min_y1 = min(r["y1"] for r in regions) - PARAGRAPH_BUFFER
+        max_y2 = max(r["y2"] for r in regions) + PARAGRAPH_BUFFER
         height = max_y2 - min_y1
         heights.append(height)
     return max(heights)
@@ -143,8 +144,8 @@ def _get_max_paragraph_crop_height(line_regions_by_id):
 def _crop_paragraph_image(filename, line_regions, crop_dims, final_dims):  # pylint: disable=too-many-locals
     image = util.read_image(filename, grayscale=True)
 
-    min_y1 = min(r['y1'] for r in line_regions) - PARAGRAPH_BUFFER
-    max_y2 = max(r['y2'] for r in line_regions) + PARAGRAPH_BUFFER
+    min_y1 = min(r["y1"] for r in line_regions) - PARAGRAPH_BUFFER
+    max_y2 = max(r["y2"] for r in line_regions) + PARAGRAPH_BUFFER
     height = max_y2 - min_y1
     crop_height = crop_dims[0]
     buffer = (crop_height - height) // 2
@@ -152,53 +153,53 @@ def _crop_paragraph_image(filename, line_regions, crop_dims, final_dims):  # pyl
     # Generate image crop
     image_crop = 255 * np.ones(crop_dims, dtype=np.uint8)
     try:
-        image_crop[buffer:buffer + height] = image[min_y1:max_y2]
-    except Exception as e:
-        print(f'Rescued {filename}: {e}')
+        image_crop[buffer : buffer + height] = image[min_y1:max_y2]
+    except Exception as e:  # pylint: disable=broad-except
+        print(f"Rescued {filename}: {e}")
         return
 
     # Generate ground truth
     gt_image = np.zeros_like(image_crop, dtype=np.uint8)
     for ind, region in enumerate(line_regions):
-        gt_image[
-            (region['y1'] - min_y1 + buffer):(region['y2'] - min_y1 + buffer),
-            region['x1']:region['x2']
-        ] = ind % 2 + 1
+        gt_image[(region["y1"] - min_y1 + buffer) : (region["y2"] - min_y1 + buffer), region["x1"] : region["x2"]] = (
+            ind % 2 + 1
+        )
 
     # Generate image for debugging
     import matplotlib.pyplot as plt  # pylint: disable=import-outside-toplevel
-    cmap = plt.get_cmap('Set1')
+
+    cmap = plt.get_cmap("Set1")
     image_crop_for_debug = np.dstack([image_crop, image_crop, image_crop])
     for ind, region in enumerate(line_regions):
         color = [255 * _ for _ in cmap(ind)[:-1]]
         cv2.rectangle(
             image_crop_for_debug,
-            (region['x1'], region['y1'] - min_y1 + buffer),
-            (region['x2'], region['y2'] - min_y1 + buffer),
+            (region["x1"], region["y1"] - min_y1 + buffer),
+            (region["x2"], region["y2"] - min_y1 + buffer),
             color,
-            3
+            3,
         )
     image_crop_for_debug = cv2.resize(image_crop_for_debug, final_dims, interpolation=cv2.INTER_AREA)
-    util.write_image(image_crop_for_debug, DEBUG_CROPS_DIRNAME / f'{filename.stem}.jpg')
+    util.write_image(image_crop_for_debug, DEBUG_CROPS_DIRNAME / f"{filename.stem}.jpg")
 
     image_crop = cv2.resize(image_crop, final_dims, interpolation=cv2.INTER_AREA)  # Quality interpolation for input
-    util.write_image(image_crop, CROPS_DIRNAME / f'{filename.stem}.jpg')
+    util.write_image(image_crop, CROPS_DIRNAME / f"{filename.stem}.jpg")
 
     gt_image = cv2.resize(gt_image, final_dims, interpolation=cv2.INTER_NEAREST)  # No interpolation for labels
-    util.write_image(gt_image, GT_DIRNAME / f'{filename.stem}.png')
+    util.write_image(gt_image, GT_DIRNAME / f"{filename.stem}.png")
 
 
 def _load_iam_paragraphs():
-    print('Loading IAM paragraph crops and ground truth from image files...')
+    print("Loading IAM paragraph crops and ground truth from image files...")
     images = []
     gt_images = []
     ids = []
-    for filename in CROPS_DIRNAME.glob('*.jpg'):
+    for filename in CROPS_DIRNAME.glob("*.jpg"):
         id_ = filename.stem
         image = util.read_image(filename, grayscale=True)
-        image = 1. - image / 255
+        image = 1.0 - image / 255
 
-        gt_filename = GT_DIRNAME / f'{id_}.png'
+        gt_filename = GT_DIRNAME / f"{id_}.png"
         gt_image = util.read_image(gt_filename, grayscale=True)
 
         images.append(image)
@@ -213,7 +214,10 @@ def _get_random_split(num_total):
     np.random.seed(42)
     num_train = int((1 - TEST_FRACTION) * num_total)
     ind = np.random.permutation(num_total)
-    train_ind, test_ind = ind[:num_train], ind[num_train:]  # pylint: disable=unsubscriptable-object
+    train_ind, test_ind = (
+        ind[:num_train],
+        ind[num_train:],
+    )  # pylint: disable=unsubscriptable-object
     return train_ind, test_ind
 
 
@@ -225,5 +229,5 @@ def main():
     print(dataset)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

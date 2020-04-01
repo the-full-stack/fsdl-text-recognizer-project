@@ -1,13 +1,15 @@
 [MESSAGES CONTROL]
 
 # Disable the message(s) with the given id(s).
-# I0011 - locally-disabled- messages showing local disabling of pylint messages
-# E1126 - Sequence index is not int,slice... - Bug in pylint:https://github.com/PyCQA/pylint/issues/1295
-disable=C0111,I0011,E1126,E0401,W0511,W0703,W1203,R0801
-
-# Code locally disables the following messages:
-# R0204 - redefined_variable_type - gives false negatives for conditionals (https://github.com/PyCQA/pylint/issues/710)
-# W0201 - attribute-defined-outside-init - gives false negatives when attribute is defined in method called within init.
+# E1130 - invalid-unary-operand-type false positive https://github.com/PyCQA/pylint/issues/1472
+# E1136 - unsubscriptable (unsubscriptable-object) - Pylint is failing to infer correct type from astroid https://github.com/PyCQA/pylint/issues/2849
+# R0801 - similar lines across files
+# W0511 - TODO comments
+# W1202 - logging-format-interpolation - Behavior barring fstrings in logging https://github.com/PyCQA/pylint/issues/2395
+# missing-function-dosctring: docstyle handles
+# bad-continuation: disagrees with black formatter
+disable=E1130,E1136,R0801,W0511,W1202,missing-function-docstring,bad-continuation
+# LAST AUDITED: 2019-01-09
 
 [MASTER]
 
@@ -22,12 +24,12 @@ extension-pkg-whitelist=numpy
 # (useful for modules/projects where namespaces are manipulated during runtime
 # and thus existing member attributes cannot be deduced by static analysis. It
 # supports qualified module names, as well as Unix pattern matching.
-ignored-modules=cv2,numpy
+ignored-modules=cv2,numpy,tensorflow
 
 # List of classes names for which member attributes should not be checked
 # (useful for classes with attributes dynamically set). This supports can work
 # with qualified names.
-ignored-classes=cv2,numpy
+ignored-classes=cv2,numpy,tensorflow
 
 [BASIC]
 

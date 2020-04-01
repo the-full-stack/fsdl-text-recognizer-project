@@ -10,6 +10,7 @@ import text_recognizer.util as util
 
 class LinePredictor:
     """Given an image of a line of handwritten text, recognizes text contents."""
+
     def __init__(self, dataset_cls=EmnistLinesDataset):
         self.model = LineModelCtc(dataset_cls=dataset_cls)
         self.model.load_weights()

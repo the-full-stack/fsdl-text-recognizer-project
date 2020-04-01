@@ -1,7 +1,7 @@
 """Define ctc_decode function."""
 import tensorflow as tf
 import tensorflow.keras.backend as K
-from tensorflow.python.ops import ctc_ops  # pylint: disable=no-name-in-module
+from tensorflow.python.ops import ctc_ops, sparse_ops  # pylint: disable=no-name-in-module
 
 
 def ctc_decode(y_pred, input_length, max_output_length):
@@ -21,16 +21,16 @@ def ctc_decode(y_pred, input_length, max_output_length):
     # Returns
         List: list of one element that contains the decoded sequence.
     """
-    y_pred = tf.log(tf.transpose(y_pred, perm=[1, 0, 2]) + K.epsilon())
-    input_length = tf.to_int32((tf.squeeze(input_length, axis=-1)))
+    y_pred = tf.math.log(tf.transpose(y_pred, perm=[1, 0, 2]) + K.epsilon())
+    input_length = tf.cast((tf.squeeze(input_length, axis=-1)), tf.int32)
 
     (decoded, _) = ctc_ops.ctc_greedy_decoder(inputs=y_pred, sequence_length=input_length)
 
     sparse = decoded[0]
-    decoded_dense = tf.sparse_to_dense(sparse.indices, sparse.dense_shape, sparse.values, default_value=-1)
+    decoded_dense = sparse_ops.sparse_to_dense(sparse.indices, sparse.dense_shape, sparse.values, default_value=-1)
 
     # Unfortunately, decoded_dense will be of different number of columns, depending on the decodings.
-    # We need to get it all in one standard shape, so let's pad if necessary.
+    # For use in `predict()`, we need to get it all in one standard shape, so let's pad if necessary.
     max_length = max_output_length + 2  # giving 2 extra characters for CTC leeway
     cols = tf.shape(decoded_dense)[-1]
 

@@ -12,23 +12,26 @@ from text_recognizer.networks import fcn
 
 
 _DATA_AUGMENTATION_PARAMS = {
-    'width_shift_range': 0.06,
-    'height_shift_range': 0.1,
-    'horizontal_flip': True,
-    'zoom_range': 0.1,
-    'fill_mode': 'constant',
-    'cval': 0,
-    'shear_range': 3,
+    "width_shift_range": 0.06,
+    "height_shift_range": 0.1,
+    "horizontal_flip": True,
+    "zoom_range": 0.1,
+    "fill_mode": "constant",
+    "cval": 0,
+    "shear_range": 3,
 }
 
 
 class LineDetectorModel(Model):
     """Model to detect lines of text in an image."""
-    def __init__(self,
-                 dataset_cls: type = IamParagraphsDataset,
-                 network_fn: Callable = fcn,
-                 dataset_args: Dict = None,
-                 network_args: Dict = None):
+
+    def __init__(
+        self,
+        dataset_cls: type = IamParagraphsDataset,
+        network_fn: Callable = fcn,
+        dataset_args: Dict = None,
+        network_args: Dict = None,
+    ):
         """Define the default dataset and network values for this model."""
         super().__init__(dataset_cls, network_fn, dataset_args, network_args)
 
@@ -36,16 +39,16 @@ class LineDetectorModel(Model):
         self.batch_augment_fn = self.augment_batch
 
     def loss(self):  # pylint: disable=no-self-use
-        return 'categorical_crossentropy'
+        return "categorical_crossentropy"
 
     def optimizer(self):  # pylint: disable=no-self-use
-        return Adam(0.001/2)
+        return Adam(0.001 / 2)
 
     def metrics(self):  # pylint: disable=no-self-use
         return None
 
     def augment_batch(self, x_batch: np.ndarray, y_batch: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        """Performs different random transformations on the whole batch of x, y samples."""
+        """Perform different random transformations on the whole batch of x, y samples."""
         x_augment, y_augment = zip(*[self._augment_sample(x, y) for x, y in zip(x_batch, y_batch)])
         return np.stack(x_augment, axis=0), np.stack(y_augment, axis=0)
 
@@ -61,13 +64,10 @@ class LineDetectorModel(Model):
         return np.squeeze(x_augment, axis=-1), y_augment
 
     def predict_on_image(self, x: np.ndarray) -> np.ndarray:
-        """Returns the network predictions on x."""
+        """Predict on a single input."""
         return self.network.predict(np.expand_dims(x, axis=0))[0]
 
-    def evaluate(self,
-                 x: np.ndarray,
-                 y: np.ndarray,
-                 batch_size: int = 32,
-                 verbose: bool = False) -> float:  # pylint: disable=unused-argument
-        """Evaluates the network on x, y on returns the loss."""
+    def evaluate(self, x: np.ndarray, y: np.ndarray, batch_size: int = 32, verbose: bool = False) -> float:
+        """Evaluate the model."""
+        # pylint: disable=unused-argument
         return self.network.evaluate(x, y, batch_size=batch_size)

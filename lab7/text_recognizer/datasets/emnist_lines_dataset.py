@@ -1,3 +1,4 @@
+"""Emnist Lines dataset: synthetic handwriting lines dataset made from EMNIST characters."""
 from collections import defaultdict
 from pathlib import Path
 
@@ -9,18 +10,38 @@ from text_recognizer.datasets.dataset import Dataset
 from text_recognizer.datasets.emnist_dataset import EmnistDataset
 
 
-DATA_DIRNAME = Dataset.data_dirname() / 'processed' / 'emnist_lines'
-ESSENTIALS_FILENAME = Path(__file__).parents[0].resolve() / 'emnist_lines_essentials.json'
+DATA_DIRNAME = Dataset.data_dirname() / "processed" / "emnist_lines"
+ESSENTIALS_FILENAME = Path(__file__).parents[0].resolve() / "emnist_lines_essentials.json"
 
 
 class EmnistLinesDataset(Dataset):
-    def __init__(self, max_length: int = 34, max_overlap: float = 0.33, num_train: int = 10000, num_test: int = 1000):
+    """
+    EmnistLinesDataset class.
+
+    Parameters
+    ----------
+    max_length
+        Max line length in characters.
+    max_overlap
+        Max overlap between characters in a line.
+    num_train
+        Number of training examples to generate.
+    num_test
+        Number of test examples to generate.
+    """
+
+    def __init__(
+        self, max_length: int = 34, max_overlap: float = 0.33, num_train: int = 10000, num_test: int = 1000,
+    ):
         self.emnist = EmnistDataset()
         self.mapping = self.emnist.mapping
         self.max_length = max_length
         self.max_overlap = max_overlap
         self.num_classes = len(self.mapping)
-        self.input_shape = (self.emnist.input_shape[0], self.emnist.input_shape[1] * self.max_length)
+        self.input_shape = (
+            self.emnist.input_shape[0],
+            self.emnist.input_shape[1] * self.max_length,
+        )
         self.output_shape = (self.max_length, self.num_classes)
         self.num_train = num_train
         self.num_test = num_test
@@ -31,57 +52,58 @@ class EmnistLinesDataset(Dataset):
 
     @property
     def data_filename(self):
-        return DATA_DIRNAME / f'ml_{self.max_length}_mo{self.max_overlap}_ntr{self.num_train}_nte{self.num_test}.h5'
+        return DATA_DIRNAME / f"ml_{self.max_length}_mo{self.max_overlap}_ntr{self.num_train}_nte{self.num_test}.h5"
 
     def load_or_generate_data(self):
         np.random.seed(42)
 
         if not self.data_filename.exists():
-            self._generate_data('train')
-            self._generate_data('test')
+            self._generate_data("train")
+            self._generate_data("test")
         self._load_data()
 
     def __repr__(self):
         return (
-            'EMNIST Lines Dataset\n'  # pylint: disable=no-member
-            f'Max length: {self.max_length}\n'
-            f'Max overlap: {self.max_overlap}\n'
-            f'Num classes: {self.num_classes}\n'
-            f'Input shape: {self.input_shape}\n'
-            f'Train: {self.x_train.shape} {self.y_train.shape}\n'
-            f'Test: {self.x_test.shape} {self.y_test.shape}\n'
+            "EMNIST Lines Dataset\n"  # pylint: disable=no-member
+            f"Max length: {self.max_length}\n"
+            f"Max overlap: {self.max_overlap}\n"
+            f"Num classes: {self.num_classes}\n"
+            f"Input shape: {self.input_shape}\n"
+            f"Train: {self.x_train.shape} {self.y_train.shape}\n"
+            f"Test: {self.x_test.shape} {self.y_test.shape}\n"
         )
 
     def _load_data(self):
-        print('EmnistLinesDataset loading data from HDF5...')
-        with h5py.File(self.data_filename, 'r') as f:
-            self.x_train = f['x_train'][:]
-            self.y_train = f['y_train'][:]
-            self.x_test = f['x_test'][:]
-            self.y_test = f['y_test'][:]
+        print("EmnistLinesDataset loading data from HDF5...")
+        with h5py.File(self.data_filename, "r") as f:
+            self.x_train = f["x_train"][:]
+            self.y_train = f["y_train"][:]
+            self.x_test = f["x_test"][:]
+            self.y_test = f["y_test"][:]
 
     def _generate_data(self, split):
-        print('EmnistLinesDataset generating data...')
+        print("EmnistLinesDataset generating data...")
 
-        from text_recognizer.datasets.sentence_generator \
-            import SentenceGenerator  # pylint: disable=import-outside-toplevel
+        # pylint: disable=import-outside-toplevel
+        from text_recognizer.datasets.sentence_generator import SentenceGenerator
+
         sentence_generator = SentenceGenerator(self.max_length)
 
         emnist = self.emnist
         emnist.load_or_generate_data()
-        if split == 'train':
+        if split == "train":
             samples_by_char = get_samples_by_char(emnist.x_train, emnist.y_train_int, emnist.mapping)
         else:
             samples_by_char = get_samples_by_char(emnist.x_test, emnist.y_test_int, emnist.mapping)
 
-        num = self.num_train if split == 'train' else self.num_test
+        num = self.num_train if split == "train" else self.num_test
 
         DATA_DIRNAME.mkdir(parents=True, exist_ok=True)
-        with h5py.File(self.data_filename, 'a') as f:
+        with h5py.File(self.data_filename, "a") as f:
             x, y = create_dataset_of_images(num, samples_by_char, sentence_generator, self.max_overlap)
             y = convert_strings_to_categorical_labels(y, emnist.inverse_mapping)
-            f.create_dataset(f'x_{split}', data=x, dtype='u1', compression='lzf')
-            f.create_dataset(f'y_{split}', data=y, dtype='u1', compression='lzf')
+            f.create_dataset(f"x_{split}", data=x, dtype="u1", compression="lzf")
+            f.create_dataset(f"y_{split}", data=y, dtype="u1", compression="lzf")
 
 
 def get_samples_by_char(samples, labels, mapping):
@@ -112,7 +134,7 @@ def construct_image_from_string(string: str, samples_by_char: dict, max_overlap:
     concatenated_image = np.zeros((H, W * N), np.uint8)
     x = 0
     for image in sampled_images:
-        concatenated_image[:, x:(x + W)] += image
+        concatenated_image[:, x : (x + W)] += image
         x += next_overlap_width
     return np.minimum(255, concatenated_image)
 
@@ -120,8 +142,9 @@ def construct_image_from_string(string: str, samples_by_char: dict, max_overlap:
 def create_dataset_of_images(N, samples_by_char, sentence_generator, max_overlap):
     sample_label = sentence_generator.generate()
     sample_image = construct_image_from_string(sample_label, samples_by_char, 0)  # Note that sample_image has 0 overlap
-    images = np.zeros((N, sample_image.shape[0], sample_image.shape[1]),  # pylint: disable=unsubscriptable-object
-                      np.uint8)
+    images = np.zeros(
+        (N, sample_image.shape[0], sample_image.shape[1]), np.uint8,  # pylint: disable=unsubscriptable-object
+    )
     labels = []
     for n in range(N):
         label = None
@@ -129,7 +152,7 @@ def create_dataset_of_images(N, samples_by_char, sentence_generator, max_overlap
             try:
                 label = sentence_generator.generate()
                 break
-            except Exception:
+            except Exception:  # pylint: disable=broad-except
                 pass
         images[n] = construct_image_from_string(label, samples_by_char, max_overlap)
         labels.append(label)
@@ -137,10 +160,7 @@ def create_dataset_of_images(N, samples_by_char, sentence_generator, max_overlap
 
 
 def convert_strings_to_categorical_labels(labels, mapping):
-    return np.array([
-        to_categorical([mapping[c] for c in label], num_classes=len(mapping))
-        for label in labels
-    ])
+    return np.array([to_categorical([mapping[c] for c in label], num_classes=len(mapping)) for label in labels])
 
 
 def main():
@@ -149,5 +169,5 @@ def main():
     print(dataset)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

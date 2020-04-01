@@ -1,4 +1,4 @@
-"""Define CharacterModel class."""
+"""CharacterModel class."""
 from typing import Callable, Dict, Tuple
 
 import numpy as np
@@ -9,12 +9,15 @@ from text_recognizer.networks.mlp import mlp
 
 
 class CharacterModel(Model):
-    def __init__(self,
-                 dataset_cls: type = EmnistDataset,
-                 network_fn: Callable = mlp,
-                 dataset_args: Dict = None,
-                 network_args: Dict = None):
-        """Define the default dataset and network values for this model."""
+    """CharacterModel works on datasets providing images, with one-hot labels."""
+
+    def __init__(
+        self,
+        dataset_cls: type = EmnistDataset,
+        network_fn: Callable = mlp,
+        dataset_args: Dict = None,
+        network_args: Dict = None,
+    ):
         super().__init__(dataset_cls, network_fn, dataset_args, network_args)
 
     def predict_on_image(self, image: np.ndarray) -> Tuple[str, float]:

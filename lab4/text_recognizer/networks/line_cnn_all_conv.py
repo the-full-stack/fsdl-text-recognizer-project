@@ -8,17 +8,15 @@ from tensorflow.keras.models import Model as KerasModel
 
 
 def line_cnn_all_conv(
-        input_shape: Tuple[int, ...],
-        output_shape: Tuple[int, ...],
-        window_width: float = 16,
-        window_stride: float = 8) -> KerasModel:
+    input_shape: Tuple[int, ...], output_shape: Tuple[int, ...], window_width: float = 16, window_stride: float = 8,
+) -> KerasModel:
     image_height, image_width = input_shape
     output_length, num_classes = output_shape
 
     model = Sequential()
     model.add(Reshape((image_height, image_width, 1), input_shape=input_shape))
-    model.add(Conv2D(32, kernel_size=(3, 3), activation='relu'))
-    model.add(Conv2D(64, (3, 3), activation='relu'))
+    model.add(Conv2D(32, kernel_size=(3, 3), activation="relu"))
+    model.add(Conv2D(64, (3, 3), activation="relu"))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Dropout(0.2))
 
@@ -34,7 +32,7 @@ def line_cnn_all_conv(
     new_width = image_width // 2 - 2
     new_window_width = window_width // 2 - 2
     new_window_stride = window_stride // 2
-    model.add(Conv2D(128, (new_height, new_window_width), (1, new_window_stride), activation='relu'))
+    model.add(Conv2D(128, (new_height, new_window_width), (1, new_window_stride), activation="relu"))
     model.add(Dropout(0.2))
     # (1, num_windows, 128)
 
@@ -45,7 +43,7 @@ def line_cnn_all_conv(
     # (num_windows, 128, 1)
 
     width = int(num_windows / output_length)
-    model.add(Conv2D(num_classes, (width, 128), (width, 1), activation='softmax'))
+    model.add(Conv2D(num_classes, (width, 128), (width, 1), activation="softmax"))
     # (image_width / width, 1, num_classes)
 
     model.add(Lambda(lambda x: tf.squeeze(x, 2)))

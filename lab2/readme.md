@@ -35,7 +35,7 @@ cd lab2/
 Let's train an LSTM model with CTC loss.
 
 ```sh
-pipenv run python training/run_experiment.py --save '{"train_args": {"epochs": 16}, "dataset": "EmnistLinesDataset", "model": "LineModelCtc", "network": "line_lstm_ctc"}'
+python training/run_experiment.py --save '{"train_args": {"epochs": 16}, "dataset": "EmnistLinesDataset", "model": "LineModelCtc", "network": "line_lstm_ctc"}'
 ```
 
 or the shortcut `tasks/train_lstm_line_predictor.sh`

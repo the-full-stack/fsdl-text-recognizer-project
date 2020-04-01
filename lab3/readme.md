@@ -32,7 +32,7 @@ Weights & Biases is an experiment tracking tool that ensures you never lose trac
 > NOTE: These instructions are optional if you're working in the pre-configured Jupyter hub.
 
 ```
-pipenv run wandb init
+wandb init
 ```
 
 You should see something like:
@@ -83,7 +83,7 @@ Click the link to see your run train.
 - launch the same experiment, but with a bigger batch size
 
 ```sh
-pipenv run python training/run_experiment.py --save '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "train_args": {"batch_size": 512}}' --gpu=1
+python training/run_experiment.py --save '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "train_args": {"batch_size": 512}}' --gpu=1
 ```
 
 Check out both runs at https://app.wandb.ai/<USERNAME>/fsdl-text-recognizer-project
@@ -106,14 +106,14 @@ Let's check it out. Run
 tasks/prepare_sample_experiments.sh
 ```
 
-or `pipenv run training/prepare_experiments.py training/experiments/sample.json`
+or `training/prepare_experiments.py training/experiments/sample.json`
 
 You should see the following:
 
 ```
-pipenv run python training/run_experiment.py --gpu=-1 '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "network_args": {"num_layers": 2}, "train_args": {"batch_size": 256}, "experiment_group": "Sample Experiments 2"}'
-pipenv run python training/run_experiment.py --gpu=-1 '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "network_args": {"num_layers": 4}, "train_args": {"batch_size": 256}, "experiment_group": "Sample Experiments 2"}'
-pipenv run python training/run_experiment.py --gpu=-1 '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "lenet", "train_args": {"batch_size": 256}, "experiment_group": "Sample Experiments 2"}'
+python training/run_experiment.py --gpu=-1 '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "network_args": {"num_layers": 2}, "train_args": {"batch_size": 256}, "experiment_group": "Sample Experiments 2"}'
+python training/run_experiment.py --gpu=-1 '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "network_args": {"num_layers": 4}, "train_args": {"batch_size": 256}, "experiment_group": "Sample Experiments 2"}'
+python training/run_experiment.py --gpu=-1 '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "lenet", "train_args": {"batch_size": 256}, "experiment_group": "Sample Experiments 2"}'
 ```
 
 Each line corresponds to an experiment.
@@ -130,5 +130,5 @@ Although you can't see output in the terminal, you can confirm that the experime
 
 ## More cool things about W&B
 
-- `pipenv run wandb restore <run_id>` will check out the code and the best model
+- `wandb restore <run_id>` will check out the code and the best model
 - sample project showing cool plots: https://app.wandb.ai/wandb/face-emotion?view=default

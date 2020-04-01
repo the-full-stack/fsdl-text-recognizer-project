@@ -1,0 +1,22 @@
+-c requirements.txt
+bandit
+black
+gpustat
+gradescope-utils
+grequests # admin
+itermplot
+jupyterlab
+matplotlib
+mypy
+nltk
+pycodestyle
+pydocstyle
+pylint
+pytest
+pyyaml
+redlock-py
+tornado
+safety
+scipy
+pillow
+wandb
