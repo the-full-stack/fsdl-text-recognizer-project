@@ -2,7 +2,7 @@
 
 ## Before you begin, make sure to set up!
 
-Please complete [Lab Setup](instructions/setup.md) before proceeding!
+Please complete [Lab Setup](/setup.md) before proceeding!
 
 ## Goal of the lab
 
