@@ -19,7 +19,6 @@ Train a model to solve a simplified version of the line text recognition problem
 
 ```
 git pull
-pipenv sync -d
 cd lab1/
 ```
 

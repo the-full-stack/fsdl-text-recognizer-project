@@ -12,7 +12,6 @@ Given the output of the model, we can find line regions with an easy image proce
 ## Setup
 
 - As always, `git pull` in the `~/fsdl-text-recognizer-project` repo to get the latest code.
-- Do a quick `pipenv sync --dev` to make sure your package versions are correct.
 - Then `cd lab5`.
 
 ## Data
