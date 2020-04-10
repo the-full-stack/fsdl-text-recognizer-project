@@ -11,7 +11,7 @@ class Dataset:
 
     @classmethod
     def data_dirname(cls):
-        return Path(__file__).resolve().parents[2] / "data"
+        return Path(__file__).resolve().parents[3] / "data"
 
     def load_or_generate_data(self):
         pass
