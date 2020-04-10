@@ -12,7 +12,7 @@ git pull origin master
 If not, open a shell in your JupyterLab instance and run
 
 ```sh
-git clone https://github.com/gradescope/fsdl-text-recognizer-project.git
+git clone https://github.com/full-stack-deep-learning/fsdl-text-recognizer-project.git
 cd fsdl-text-recognizer-project
 ```
 
