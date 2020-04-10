@@ -18,6 +18,16 @@ cd fsdl-text-recognizer-project
 
 ## 2. Set up the Python environment
 
+### If on GCP AI Platform Notebooks instance
+
+Simply run ```pip install -r requirements.txt -r requirements-dev.txt```.
+
+Also, run ```export PYTHONPATH=.``` before executing any commands later on, or you will get errors like `ModuleNotFoundError: No module named 'text_recognizer'`.
+
+In order to not have to set `PYTHONPATH` in every terminal you open, just add that line as the last line of the `~/.bashrc` file using a text editor of your choice (e.g. `nano ~/.bashrc`)
+
+### If on own machine
+
 Run `conda env create` to create an environment called `fsdl-text-recognizer`, as defined in `environment.yml`.
 This environment will provide us with the right Python version as well as the CUDA and CUDNN libraries.
 We will install Python libraries using `pip-sync`, however, which will let us do three nice things:
@@ -30,11 +40,14 @@ So, after running `conda env create`, activate the new environment and install t
 
 ```sh
 conda activate fsdl-text-recognizer
-pip-compile requirements.in && pip-compile requirements-dev.in
 pip-sync requirements.txt requirements-dev.txt
 ```
 
-The latter two commands are provided for you as `tasks/update_requirements.sh` and `tasks/sync_requirements.sh`.
+If you add, remove, or need to update versions of some requirements, edit the `.in` files, then run
+
+```
+pip-compile requirements.in && pip-compile requirements-dev.in
+```
 
 Now, every time you work in this directory, make sure to start your session with `conda activate fsdl-text-recognizer`.
 
@@ -43,7 +56,6 @@ Now, every time you work in this directory, make sure to start your session with
 Before we get started, please run a command that will take a little bit of time to execute.
 
 ```sh
-git pull
 cd lab1/
 python text_recognizer/datasets/emnist_dataset.py
 cd ..
