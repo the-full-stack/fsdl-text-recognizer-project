@@ -37,14 +37,14 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            sed -i 's/tensorflow/tensorflow-cpu/' requirements.txt
+            sed -i 's/tensorflow==/tensorflow-cpu==/' requirements.txt
             pip install -r requirements.txt
             pip install -r requirements-dev.txt
 
       - save_cache:
-        key: cache-{{ checksum "requirements.txt" }}-{{ checksum "requirements-dev.txt" }}
-        paths:
-          - ~/.local
+          key: cache-{{ checksum "requirements.txt" }}-{{ checksum "requirements-dev.txt" }}
+          paths:
+            - ~/.local
 
       - run:
           name: run linting
