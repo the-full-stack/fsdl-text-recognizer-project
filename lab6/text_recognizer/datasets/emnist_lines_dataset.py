@@ -31,11 +31,17 @@ class EmnistLinesDataset(Dataset):
     """
 
     def __init__(
-        self, max_length: int = 34, max_overlap: float = 0.33, num_train: int = 10000, num_test: int = 1000,
+        self,
+        max_length: int = 34,
+        min_overlap: float = 0,
+        max_overlap: float = 0.33,
+        num_train: int = 10000,
+        num_test: int = 1000,
     ):
         self.emnist = EmnistDataset()
         self.mapping = self.emnist.mapping
         self.max_length = max_length
+        self.min_overlap = min_overlap
         self.max_overlap = max_overlap
         self.num_classes = len(self.mapping)
         self.input_shape = (
@@ -52,7 +58,10 @@ class EmnistLinesDataset(Dataset):
 
     @property
     def data_filename(self):
-        return DATA_DIRNAME / f"ml_{self.max_length}_mo{self.max_overlap}_ntr{self.num_train}_nte{self.num_test}.h5"
+        return (
+            DATA_DIRNAME
+            / f"ml_{self.max_length}_o{self.min_overlap}_{self.max_overlap}_ntr{self.num_train}_nte{self.num_test}.h5"
+        )
 
     def load_or_generate_data(self):
         np.random.seed(42)
@@ -66,6 +75,7 @@ class EmnistLinesDataset(Dataset):
         return (
             "EMNIST Lines Dataset\n"  # pylint: disable=no-member
             f"Max length: {self.max_length}\n"
+            f"Min overlap: {self.min_overlap}\n"
             f"Max overlap: {self.max_overlap}\n"
             f"Num classes: {self.num_classes}\n"
             f"Input shape: {self.input_shape}\n"
@@ -100,7 +110,9 @@ class EmnistLinesDataset(Dataset):
 
         DATA_DIRNAME.mkdir(parents=True, exist_ok=True)
         with h5py.File(self.data_filename, "a") as f:
-            x, y = create_dataset_of_images(num, samples_by_char, sentence_generator, self.max_overlap)
+            x, y = create_dataset_of_images(
+                num, samples_by_char, sentence_generator, self.min_overlap, self.max_overlap
+            )
             y = convert_strings_to_categorical_labels(y, emnist.inverse_mapping)
             f.create_dataset(f"x_{split}", data=x, dtype="u1", compression="lzf")
             f.create_dataset(f"y_{split}", data=y, dtype="u1", compression="lzf")
@@ -125,8 +137,10 @@ def select_letter_samples_for_string(string, samples_by_char):
     return [sample_image_by_char[char] for char in string]
 
 
-def construct_image_from_string(string: str, samples_by_char: dict, max_overlap: float) -> np.ndarray:
-    overlap = np.random.rand() * max_overlap
+def construct_image_from_string(
+    string: str, samples_by_char: dict, min_overlap: float, max_overlap: float
+) -> np.ndarray:
+    overlap = np.random.uniform(min_overlap, max_overlap)
     sampled_images = select_letter_samples_for_string(string, samples_by_char)
     N = len(sampled_images)
     H, W = sampled_images[0].shape
@@ -139,22 +153,24 @@ def construct_image_from_string(string: str, samples_by_char: dict, max_overlap:
     return np.minimum(255, concatenated_image)
 
 
-def create_dataset_of_images(N, samples_by_char, sentence_generator, max_overlap):
+def create_dataset_of_images(N, samples_by_char, sentence_generator, min_overlap, max_overlap):
     sample_label = sentence_generator.generate()
-    sample_image = construct_image_from_string(sample_label, samples_by_char, 0)  # Note that sample_image has 0 overlap
+    sample_image = construct_image_from_string(sample_label, samples_by_char, 0, 0)  # sample_image has 0 overlap
     images = np.zeros(
         (N, sample_image.shape[0], sample_image.shape[1]), np.uint8,  # pylint: disable=unsubscriptable-object
     )
     labels = []
     for n in range(N):
         label = None
-        for _ in range(5):  # Try 5 times to generate before actually erroring
+        for _ in range(10):  # Try several times to generate before actually erroring
             try:
                 label = sentence_generator.generate()
                 break
             except Exception:  # pylint: disable=broad-except
                 pass
-        images[n] = construct_image_from_string(label, samples_by_char, max_overlap)
+        if label is None:
+            raise RuntimeError("Was not able to generate a valid string")
+        images[n] = construct_image_from_string(label, samples_by_char, min_overlap, max_overlap)
         labels.append(label)
     return images, labels
 

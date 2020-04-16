@@ -56,22 +56,6 @@ training/run_experiment.py \
   '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "mlp", "network_args": {"num_layers": 8}, "train_args": {"batch_size": 128}}'
 ```
 
-Let's also train a CNN on the same task.
-
-```sh
-training/run_experiment.py '{"dataset": "EmnistDataset", "model": "CharacterModel", "network": "lenet", "train_args": {"epochs": 1}}'
-```
-
-Training the single epoch will take about 2 minutes (that's why we only do one epoch in this lab :)).
-Leave it running while we go on to the next part.
-
-It is very useful to be able to subsample the dataset for quick experiments.
-This is possibe by passing `subsample_fraction=0.1` (or some other fraction) at dataset initialization, or in `dataset_args` in the `run_experiment.py` dictionary, for example:
-
-```sh
-training/run_experiment.py '{"dataset": "EmnistDataset", "dataset_args": {"subsample_fraction": 0.1}, "model": "CharacterModel", "network": "lenet"}'
-```
-
 ## Testing
 
 First, let's take a look at how the test works at
