@@ -8,7 +8,7 @@ from tensorflow.keras.models import Model as KerasModel
 
 
 def line_cnn_all_conv(
-    input_shape: Tuple[int, ...], output_shape: Tuple[int, ...], window_width: float = 28, window_stride: float = 28,
+    input_shape: Tuple[int, ...], output_shape: Tuple[int, ...], window_width: float = 28, window_stride: float = 14,
 ) -> KerasModel:
     image_height, image_width = input_shape
     output_length, num_classes = output_shape
