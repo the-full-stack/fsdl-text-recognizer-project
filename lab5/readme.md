@@ -46,17 +46,19 @@ The basic idea is a deep convolutional network with resnet-style blocks (input t
 We call it FCN, as in "Fully Convolutional Network," after the seminal paper that first used convnets for segmentation.
 
 Unlike the original FCN, however, we do not maxpool or upsample, but instead rely on dilated convolutions to rapidly increase the effective receptive field.
-[Here](https://fomoro.com/research/articles/receptive-field-calculator) is a very calculator of the effective receptive field size of a convnet.
+[Here](https://fomoro.com/research/article/receptive-field-calculator) is a very useful calculator of the effective receptive field size of a convnet.
 
 The crucial thing to understand is that because we are labeling odd and even lines differently, each predicted pixel must have the context of the entire image to correctly label -- otherwise, there is no way to know whether the pixel is on an odd or even line.
+
+## Train the network
+
+Running `./tasks/train_line_detector.sh` will begin training our model.
 
 ## Review results
 
 The model converges to something really good.
 
 Check out `notebooks/04b-look-at-line-detector-predictions.ipynb` to see sample predictions on the test set.
-
-We also plot some sample training data augmentation in that notebook.
 
 ## Combining the two models
 

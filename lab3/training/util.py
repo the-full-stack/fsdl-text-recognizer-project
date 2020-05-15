@@ -3,10 +3,13 @@ from time import time
 
 from tensorflow.keras.callbacks import EarlyStopping, Callback
 
+
 from text_recognizer.datasets.dataset import Dataset
 from text_recognizer.models.base import Model
 
 EARLY_STOPPING = True
+
+
 
 
 def train_model(model: Model, dataset: Dataset, epochs: int, batch_size: int, use_wandb: bool = False) -> Model:
@@ -16,6 +19,7 @@ def train_model(model: Model, dataset: Dataset, epochs: int, batch_size: int, us
     if EARLY_STOPPING:
         early_stopping = EarlyStopping(monitor="val_loss", min_delta=0.01, patience=3, verbose=1, mode="auto")
         callbacks.append(early_stopping)
+
 
     model.network.summary()
 

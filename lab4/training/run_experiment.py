@@ -6,12 +6,12 @@ import importlib
 from typing import Dict
 import os
 
-# Hide lines below until Lab 3
+# Hide lines below until Lab 4
 import wandb
 
 from training.gpu_manager import GPUManager
 
-# Hide lines above until Lab 3
+# Hide lines above until Lab 4
 from training.util import train_model
 
 DEFAULT_TRAIN_ARGS = {"batch_size": 64, "epochs": 16}
@@ -76,10 +76,10 @@ def run_experiment(experiment_config: Dict, save_weights: bool, gpu_ind: int, us
     experiment_config["experiment_group"] = experiment_config.get("experiment_group", None)
     experiment_config["gpu_ind"] = gpu_ind
 
-    # Hide lines below until Lab 3
+    # Hide lines below until Lab 4
     if use_wandb:
         wandb.init(config=experiment_config)
-    # Hide lines above until Lab 3
+    # Hide lines above until Lab 4
 
     train_model(
         model,
@@ -91,10 +91,10 @@ def run_experiment(experiment_config: Dict, save_weights: bool, gpu_ind: int, us
     score = model.evaluate(dataset.x_test, dataset.y_test)
     print(f"Test evaluation: {score}")
 
-    # Hide lines below until Lab 3
+    # Hide lines below until Lab 4
     if use_wandb:
         wandb.log({"test_metric": score})
-    # Hide lines above until Lab 3
+    # Hide lines above until Lab 4
 
     if save_weights:
         model.save_weights()
@@ -126,11 +126,11 @@ def _parse_args():
 def main():
     """Run experiment."""
     args = _parse_args()
-    # Hide lines below until Lab 3
+    # Hide lines below until Lab 4
     if args.gpu < 0:
         gpu_manager = GPUManager()
         args.gpu = gpu_manager.get_free_gpu()  # Blocks until one is available
-    # Hide lines above until Lab 3
+    # Hide lines above until Lab 4
 
     experiment_config = json.loads(args.experiment_config)
     os.environ["CUDA_VISIBLE_DEVICES"] = f"{args.gpu}"

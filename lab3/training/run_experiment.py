@@ -70,6 +70,7 @@ def run_experiment(experiment_config: Dict, save_weights: bool, gpu_ind: int, us
     experiment_config["experiment_group"] = experiment_config.get("experiment_group", None)
     experiment_config["gpu_ind"] = gpu_ind
 
+
     train_model(
         model,
         dataset,
@@ -79,6 +80,7 @@ def run_experiment(experiment_config: Dict, save_weights: bool, gpu_ind: int, us
     )
     score = model.evaluate(dataset.x_test, dataset.y_test)
     print(f"Test evaluation: {score}")
+
 
     if save_weights:
         model.save_weights()

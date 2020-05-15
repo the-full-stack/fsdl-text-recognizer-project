@@ -3,11 +3,11 @@ from time import time
 
 from tensorflow.keras.callbacks import EarlyStopping, Callback
 
-# Hide lines below until Lab 3
+# Hide lines below until Lab 4
 import wandb
 from wandb.keras import WandbCallback
 
-# Hide lines above until Lab 3
+# Hide lines above until Lab 4
 
 from text_recognizer.datasets.dataset import Dataset
 from text_recognizer.models.base import Model
@@ -15,7 +15,7 @@ from text_recognizer.models.base import Model
 EARLY_STOPPING = True
 
 
-# Hide lines below until Lab 3
+# Hide lines below until Lab 4
 class WandbImageLogger(Callback):
     """Custom callback for logging image predictions"""
 
@@ -32,7 +32,7 @@ class WandbImageLogger(Callback):
         wandb.log({"examples": images}, commit=False)
 
 
-# Hide lines above until Lab 3
+# Hide lines above until Lab 4
 
 
 def train_model(model: Model, dataset: Dataset, epochs: int, batch_size: int, use_wandb: bool = False) -> Model:
@@ -43,13 +43,13 @@ def train_model(model: Model, dataset: Dataset, epochs: int, batch_size: int, us
         early_stopping = EarlyStopping(monitor="val_loss", min_delta=0.01, patience=3, verbose=1, mode="auto")
         callbacks.append(early_stopping)
 
-    # Hide lines below until Lab 3
+    # Hide lines below until Lab 4
     if use_wandb:
         image_callback = WandbImageLogger(model, dataset)
         wandb_callback = WandbCallback()
         callbacks.append(image_callback)
         callbacks.append(wandb_callback)
-    # Hide lines above until Lab 3
+    # Hide lines above until Lab 4
 
     model.network.summary()
 
