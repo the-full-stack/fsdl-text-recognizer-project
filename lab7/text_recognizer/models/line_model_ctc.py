@@ -23,10 +23,9 @@ class LineModelCtc(Model):
         network_args: Dict = None,
     ):
         """Define the default dataset and network values for this model."""
-        default_dataset_args: dict = {}
         if dataset_args is None:
             dataset_args = {}
-        dataset_args = {**default_dataset_args, **dataset_args}
+        dataset_args["categorical_format"] = True
 
         default_network_args = {"window_width": 12, "window_stride": 5}
         if network_args is None:

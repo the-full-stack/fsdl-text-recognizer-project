@@ -27,7 +27,7 @@ cd lab3
 Let's train an LSTM model with CTC loss.
 
 ```sh
-python training/run_experiment.py --save '{"train_args": {"epochs": 16}, "dataset": "EmnistLinesDataset", "model": "LineModelCtc", "network": "line_lstm_ctc"}'
+python training/run_experiment.py --save '{"train_args": {"epochs": 16}, "dataset": "EmnistLinesDataset", "dataset_args": {"categorical_format": true}, "model": "LineModelCtc", "network": "line_lstm_ctc"}'
 ```
 
 or the shortcut `tasks/train_lstm_line_predictor.sh`
@@ -36,3 +36,14 @@ or the shortcut `tasks/train_lstm_line_predictor.sh`
 
 If you have time left over, or want to play around with this later on, you can try writing your own non-CTC `line_lstm` network (define it in `text_recognizer/networks/line_lstm.py`).
 For example, you could code up an encoder-decoder architecture with attention.
+
+## Addendum: Transformer-based model
+
+We have updated the data format for `EmnistLinesDataset`, so make sure to
+
+```
+git pull
+rm -r fsdl-text-recognizer/data/processed/emnist_lines/
+```
+
+Go through `notebooks/02c-transformer.ipynb` and the files it imports to see a Transformer-based approach to this problem.

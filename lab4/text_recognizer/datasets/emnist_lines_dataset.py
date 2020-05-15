@@ -1,9 +1,11 @@
 """Emnist Lines dataset: synthetic handwriting lines dataset made from EMNIST characters."""
 from collections import defaultdict
 from pathlib import Path
+from typing import List
 
 import h5py
 import numpy as np
+from boltons.cacheutils import cachedproperty
 from tensorflow.keras.utils import to_categorical
 
 from text_recognizer.datasets.dataset import Dataset
@@ -28,6 +30,10 @@ class EmnistLinesDataset(Dataset):
         Number of training examples to generate.
     num_test
         Number of test examples to generate.
+    categorical_format
+        If True, then y labels are given as one-hot vectors.
+    with_start_and_end_tokens
+        If True, start and end each sequence with special tokens.
     """
 
     def __init__(
@@ -35,12 +41,27 @@ class EmnistLinesDataset(Dataset):
         max_length: int = 34,
         min_overlap: float = 0,
         max_overlap: float = 0.33,
-        num_train: int = 10000,
-        num_test: int = 1000,
+        num_train: int = 100000,
+        num_test: int = 10000,
+        categorical_format: bool = False,
+        with_start_and_end_labels: bool = False,
     ):
+        self.categorical_format = categorical_format
+        self.with_start_and_end_labels = with_start_and_end_labels
+
         self.emnist = EmnistDataset()
-        self.mapping = self.emnist.mapping
+
+        self.mapping = _augment_mapping(self.emnist.mapping)
+        self.inverse_mapping = {v: k for k, v in self.mapping.items()}
+        self.padding_label = self.inverse_mapping["_"]
+        self.start_label = self.inverse_mapping["<s>"]
+        self.end_label = self.inverse_mapping["<e>"]
+
         self.max_length = max_length
+        self.max_output_length = self.max_length
+        if self.with_start_and_end_labels:
+            self.max_output_length += 2
+
         self.min_overlap = min_overlap
         self.max_overlap = max_overlap
         self.num_classes = len(self.mapping)
@@ -48,20 +69,19 @@ class EmnistLinesDataset(Dataset):
             self.emnist.input_shape[0],
             self.emnist.input_shape[1] * self.max_length,
         )
-        self.output_shape = (self.max_length, self.num_classes)
+        self.output_shape = (self.max_output_length, self.num_classes)
         self.num_train = num_train
         self.num_test = num_test
+
         self.x_train = None
-        self.y_train = None
+        self.y_train_int = None
         self.x_test = None
-        self.y_test = None
+        self.y_test_int = None
 
     @property
     def data_filename(self):
-        return (
-            DATA_DIRNAME
-            / f"ml_{self.max_length}_o{self.min_overlap}_{self.max_overlap}_ntr{self.num_train}_nte{self.num_test}.h5"
-        )
+        name = f"ml_{self.max_length}_o{self.min_overlap}_{self.max_overlap}_ntr{self.num_train}_nte{self.num_test}.h5"
+        return DATA_DIRNAME / name
 
     def load_or_generate_data(self):
         np.random.seed(42)
@@ -70,6 +90,21 @@ class EmnistLinesDataset(Dataset):
             self._generate_data("train")
             self._generate_data("test")
         self._load_data()
+
+    @cachedproperty
+    def y_train(self):
+        return self.format_y_int(self.y_train_int)
+
+    @cachedproperty
+    def y_test(self):
+        return self.format_y_int(self.y_test_int)
+
+    def format_y_int(self, y):
+        if self.with_start_and_end_labels:
+            y = add_start_and_end_labels(y, self.padding_label, self.start_label, self.end_label)
+        if self.categorical_format:
+            y = to_categorical(y, self.num_classes)
+        return y
 
     def __repr__(self):
         return (
@@ -87,9 +122,9 @@ class EmnistLinesDataset(Dataset):
         print("EmnistLinesDataset loading data from HDF5...")
         with h5py.File(self.data_filename, "r") as f:
             self.x_train = f["x_train"][:]
-            self.y_train = f["y_train"][:]
+            self.y_train_int = f["y_train_int"][:]
             self.x_test = f["x_test"][:]
-            self.y_test = f["y_test"][:]
+            self.y_test_int = f["y_test_int"][:]
 
     def _generate_data(self, split):
         print("EmnistLinesDataset generating data...")
@@ -113,9 +148,9 @@ class EmnistLinesDataset(Dataset):
             x, y = create_dataset_of_images(
                 num, samples_by_char, sentence_generator, self.min_overlap, self.max_overlap
             )
-            y = convert_strings_to_categorical_labels(y, emnist.inverse_mapping)
+            y = convert_strings_to_ints(y, self.inverse_mapping)
             f.create_dataset(f"x_{split}", data=x, dtype="u1", compression="lzf")
-            f.create_dataset(f"y_{split}", data=y, dtype="u1", compression="lzf")
+            f.create_dataset(f"y_{split}_int", data=y, dtype="u1", compression="lzf")
 
 
 def get_samples_by_char(samples, labels, mapping):
@@ -175,8 +210,53 @@ def create_dataset_of_images(N, samples_by_char, sentence_generator, min_overlap
     return images, labels
 
 
-def convert_strings_to_categorical_labels(labels, mapping):
-    return np.array([to_categorical([mapping[c] for c in label], num_classes=len(mapping)) for label in labels])
+def convert_strings_to_ints(labels: List[str], mapping: dict) -> np.ndarray:
+    return np.array([[mapping[c] for c in label] for label in labels])
+
+
+def _augment_mapping(mapping):
+    """Augment the character mapping with punctuation and with padding, start, and end tokens."""
+    # Extra symbols in IAM dataset
+    extra_symbols = [
+        " ",
+        "!",
+        '"',
+        "#",
+        "&",
+        "'",
+        "(",
+        ")",
+        "*",
+        "+",
+        ",",
+        "-",
+        ".",
+        "/",
+        ":",
+        ";",
+        "?",
+    ]
+
+    # Special padding label
+    extra_symbols.append("_")
+
+    # Special start and end labels
+    extra_symbols.append("<s>")
+    extra_symbols.append("<e>")
+
+    max_key = max(mapping.keys())
+    extra_mapping = {}
+    for i, symbol in enumerate(extra_symbols):
+        extra_mapping[max_key + 1 + i] = symbol
+
+    return {**mapping, **extra_mapping}
+
+
+def add_start_and_end_labels(y, padding_label, start_label, end_label):
+    N = y.shape[0]
+    y = np.hstack((np.ones((N, 1)) * start_label, y, np.ones((N, 1)) * padding_label))
+    y[range(N), [np.where(row == padding_label)[0][0] for row in y]] = end_label
+    return y
 
 
 def main():

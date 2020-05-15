@@ -26,7 +26,7 @@ cd lab4
 Let's train with the default params by running `tasks/train_lstm_line_predictor_on_iam.sh`, which runs the following command:
 
 ```bash
-python training/run_experiment.py --save '{"dataset": "IamLinesDataset", "model": "LineModelCtc", "network": "line_lstm_ctc"}'
+python training/run_experiment.py --save '{"dataset": "IamLinesDataset", "dataset_args": {"categorical_format": true}, "model": "LineModelCtc", "network": "line_lstm_ctc"}'
 ```
 
 This uses our LSTM with CTC model. 8 epochs gets accuracy of 40% and takes about 10 minutes.

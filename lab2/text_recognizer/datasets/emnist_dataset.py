@@ -41,7 +41,7 @@ class EmnistDataset(Dataset):
             _download_and_process_emnist()
         with open(ESSENTIALS_FILENAME) as f:
             essentials = json.load(f)
-        self.mapping = _augment_emnist_mapping(dict(essentials["mapping"]))
+        self.mapping = dict(essentials["mapping"])
         self.inverse_mapping = {v: k for k, v in self.mapping.items()}
         self.num_classes = len(self.mapping)
         self.input_shape = essentials["input_shape"]
@@ -152,40 +152,6 @@ def _sample_to_balance(x, y):
     x_sampled = x[ind]
     y_sampled = y[ind]
     return x_sampled, y_sampled
-
-
-def _augment_emnist_mapping(mapping):
-    """Augment the mapping with extra symbols."""
-    # Extra symbols in IAM dataset
-    extra_symbols = [
-        " ",
-        "!",
-        '"',
-        "#",
-        "&",
-        "'",
-        "(",
-        ")",
-        "*",
-        "+",
-        ",",
-        "-",
-        ".",
-        "/",
-        ":",
-        ";",
-        "?",
-    ]
-
-    # padding symbol
-    extra_symbols.append("_")
-
-    max_key = max(mapping.keys())
-    extra_mapping = {}
-    for i, symbol in enumerate(extra_symbols):
-        extra_mapping[max_key + 1 + i] = symbol
-
-    return {**mapping, **extra_mapping}
 
 
 def main():

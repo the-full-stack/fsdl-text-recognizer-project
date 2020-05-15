@@ -11,7 +11,7 @@ from tensorflow.keras.utils import to_categorical
 
 from text_recognizer import util
 from text_recognizer.datasets.dataset import Dataset, _parse_args
-from text_recognizer.datasets.emnist_dataset import EmnistDataset
+from text_recognizer.datasets.emnist_lines_dataset import EmnistLinesDataset
 
 
 PROCESSED_DATA_DIRNAME = Dataset.data_dirname() / "processed" / "iam_lines"
@@ -21,12 +21,27 @@ PROCESSED_DATA_URL = "https://s3-us-west-2.amazonaws.com/fsdl-public-assets/iam_
 
 class IamLinesDataset(Dataset):
     """
-
     Note that we use cachedproperty because data takes time to load.
+
+    Parameters
+    ----------
+    categorical_format
+        If True, then y labels are given as one-hot vectors.
+    with_start_and_end_tokens
+        If True, start and end each sequence with special tokens
+    subsample_fraction
+        If given, subsample data.
     """
 
-    def __init__(self, subsample_fraction: float = None):
-        self.mapping = EmnistDataset().mapping
+    def __init__(
+        self,
+        categorical_format: bool = False,
+        with_start_and_end_labels: bool = False,
+        subsample_fraction: float = None,
+    ):
+        self.categorical_format = categorical_format
+        self.with_start_and_end_labels = with_start_and_end_labels
+        self.mapping = EmnistLinesDataset().mapping
         self.inverse_mapping = {v: k for k, v in self.mapping.items()}
         self.num_classes = len(self.mapping)
         self.input_shape = (28, 952)
@@ -64,13 +79,18 @@ class IamLinesDataset(Dataset):
 
     @cachedproperty
     def y_train(self):
-        """Return y_train"""
-        return to_categorical(self.y_train_int, self.num_classes)
+        return self.format_y_int(self.y_train_int)
 
     @cachedproperty
     def y_test(self):
-        """Return y_test"""
-        return to_categorical(self.y_test_int, self.num_classes)
+        return self.format_y_int(self.y_test_int)
+
+    def format_y_int(self, y):
+        if self.with_start_and_end_labels:
+            y = add_start_and_end_labels(y, self.padding_label, self.start_label, self.end_label)
+        if self.categorical_format:
+            y = to_categorical(y, self.num_classes)
+        return y
 
     def __repr__(self):
         """Print info about the dataset."""

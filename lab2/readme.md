@@ -58,5 +58,5 @@ We can also express the same network using all convolutional layers, which we do
 We can train this model with a command, too:
 
 ```sh
-python training/run_experiment.py --save '{"train_args": {"epochs": 5}, "dataset": "EmnistLinesDataset", "dataset_args": {"max_length": 8, "max_overlap": 0}, "model": "LineModel", "network": "line_cnn_all_conv"}'
+python training/run_experiment.py --save '{"train_args": {"epochs": 5}, "dataset": "EmnistLinesDataset", "dataset_args": {"categorical_format": true, "max_length": 8, "max_overlap": 0}, "model": "LineModel", "network": "line_cnn_all_conv"}'
 ```

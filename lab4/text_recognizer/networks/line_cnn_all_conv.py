@@ -58,3 +58,41 @@ def line_cnn_all_conv(
     # Since we floor'd the calculation of width, we might have too many items in the sequence. Take only output_length.
     # model.add(Lambda(lambda x: x[:, :output_length, :]))
     return model
+
+
+def line_cnn_for_transformer(
+    input_shape: Tuple[int, ...], window_width: float = 28, window_stride: float = 28,
+) -> KerasModel:
+    image_height, image_width = input_shape
+    # Current shape is: (image_height, image_width, 1)
+
+    model = Sequential()
+    model.add(Reshape((image_height, image_width, 1), input_shape=input_shape))
+    model.add(Conv2D(32, kernel_size=(3, 3), activation="relu", padding="same"))
+    model.add(Conv2D(32, (3, 3), activation="relu", padding="same"))
+    model.add(MaxPooling2D(pool_size=(2, 2), padding="same"))
+    model.add(Dropout(0.2))
+    # Current shape is: (image_height // 2, image_width // 2, 32)
+
+    model.add(Conv2D(32, kernel_size=(3, 3), activation="relu", padding="same"))
+    model.add(Conv2D(32, (3, 3), activation="relu", padding="same"))
+    model.add(Dropout(0.2))
+    # Current shape is: (image_height // 4, image_width // 4, 32)
+
+    # Because of MaxPooling, everything is divided by 2
+    new_height = image_height // 2
+    new_width = image_width // 2
+    new_window_width = window_width // 2
+    new_window_stride = window_stride // 2
+
+    model.add(
+        Conv2D(32, (new_height, new_window_width), (new_height, new_window_stride), activation="relu", padding="same")
+    )
+
+    # Shape is now (1, num_windows, 128)
+    # num_windows = np.ceil(new_width / new_window_stride)
+
+    model.add(Reshape((-1, 32)))
+    # Shape is now (num_windows, 128)
+
+    return model

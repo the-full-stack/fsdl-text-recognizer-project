@@ -13,7 +13,7 @@ def lenet(input_shape: Tuple[int, ...], output_shape: Tuple[int, ...]) -> Model:
     # Your code below (Lab 2)
     model = Sequential()
     if len(input_shape) < 3:
-        model.add(Lambda(lambda x: tf.expand_dims(x, -1), input_shape=input_shape, name='expand_dims'))
+        model.add(Lambda(lambda x: tf.expand_dims(x, -1), input_shape=input_shape, name="expand_dims"))
         input_shape = (input_shape[0], input_shape[1], 1)
     model.add(Conv2D(32, kernel_size=(3, 3), activation="relu", input_shape=input_shape, padding="valid"))
     model.add(Conv2D(64, (3, 3), activation="relu", padding="valid"))
