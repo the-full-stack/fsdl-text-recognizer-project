@@ -21,9 +21,6 @@ class LineModel(Model):
         network_args: Dict = None,
     ):
         """Define the default dataset and network values for this model."""
-        if dataset_args is None:
-            dataset_args = {}
-        dataset_args["categorical_format"] = True
         super().__init__(dataset_cls, network_fn, dataset_args, network_args)
 
     def evaluate(self, x, y, batch_size=16, verbose=True):
