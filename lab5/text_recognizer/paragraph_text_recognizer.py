@@ -1,5 +1,5 @@
 """
-Takes an image and returns all the text in it, by first segmenting the image with LineDetector, then extracting crops
+Take an image and return all the text in it, by first segmenting the image with LineDetector, then extracting crops
 of the image corresponding to the line regions, and running each line region crop through LinePredictor.
 """
 from typing import List, Tuple, Union

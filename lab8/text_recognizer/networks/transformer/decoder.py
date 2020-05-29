@@ -1,4 +1,6 @@
-# Code originally from https://colab.research.google.com/github/tensorflow/examples/blob/master/community/en/transformer_chatbot.ipynb
+"""Transformer decoder layer."""
+# Code originally from https://colab.research.google.com/github/tensorflow/examples/blob/master
+#                      /community/en/transformer_chatbot.ipynb
 import tensorflow as tf
 
 from text_recognizer.networks.transformer.positional_encoding import PositionalEncoding

@@ -1,5 +1,6 @@
 """Transformer Keras model."""
-# Code originally from https://colab.research.google.com/github/tensorflow/examples/blob/master/community/en/transformer_chatbot.ipynb
+# Code originally from https://colab.research.google.com/github/tensorflow/examples/blob/master
+#                      /community/en/transformer_chatbot.ipynb
 from typing import Tuple
 
 import tensorflow as tf
@@ -15,7 +16,7 @@ def run_transformer_inference(
 ) -> tf.Tensor:
     output = tf.expand_dims([start_label], 0)
 
-    for i in range(max_length):
+    for _ in range(max_length):
         predictions = model(inputs=[image, output], training=False)
 
         # select the last word from the seq_len dimension
@@ -26,12 +27,13 @@ def run_transformer_inference(
             break
 
         # concatenated the predicted_id to the output which is given to the decoder as input
+        # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
         output = tf.concat([output, predicted_id], axis=-1)
 
     return tf.squeeze(output, axis=0)
 
 
-def transformer(
+def transformer(  # pylint: disable=too-many-arguments
     image_shape: Tuple[int, ...],
     window_width: int,
     window_stride: int,

@@ -1,3 +1,4 @@
+"""Utility functions."""
 from tensorflow.python.keras import backend as K
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import array_ops
@@ -42,7 +43,7 @@ def sparse_categorical_accuracy_ignoring_padding(y_true, y_pred, padding_label):
     return math_ops.cast(math_ops.equal(y_true_masked, y_pred_masked), K.floatx())
 
 
-class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
+class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):  # pylint: disable=abstract-method
     """Learning rate scheduler from the Attention is all you need paper."""
 
     def __init__(self, d_model, warmup_steps=4000):

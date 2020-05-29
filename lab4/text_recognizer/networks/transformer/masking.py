@@ -1,4 +1,6 @@
-# Code originally from https://colab.research.google.com/github/tensorflow/examples/blob/master/community/en/transformer_chatbot.ipynb
+"""Masking code for transformers."""
+# Code originally from https://colab.research.google.com/github/tensorflow/examples/blob/master
+#                      /community/en/transformer_chatbot.ipynb
 import tensorflow as tf
 
 

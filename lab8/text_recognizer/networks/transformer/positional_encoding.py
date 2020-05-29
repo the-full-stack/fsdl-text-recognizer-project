@@ -1,4 +1,6 @@
-# Code originally from https://colab.research.google.com/github/tensorflow/examples/blob/master/community/en/transformer_chatbot.ipynb
+"""Positional encoding for transformer."""
+# Code originally from https://colab.research.google.com/github/tensorflow/examples/blob/master
+#                      /community/en/transformer_chatbot.ipynb
 import tensorflow as tf
 
 
@@ -6,13 +8,15 @@ MAX_POSITION = 1000
 
 
 class PositionalEncoding(tf.keras.layers.Layer):
+    """Positional encoding for transformer."""
+
     def __init__(self, d_model, position=None):
         super(PositionalEncoding, self).__init__()
         if position is None:
             position = MAX_POSITION
         self.pos_encoding = self.positional_encoding(position, d_model)
 
-    def get_angles(self, position, i, d_model):
+    def get_angles(self, position, i, d_model):  # pylint: disable=no-self-use
         angles = 1 / tf.pow(10000, (2 * (i // 2)) / tf.cast(d_model, tf.float32))
         return position * angles
 
@@ -27,9 +31,10 @@ class PositionalEncoding(tf.keras.layers.Layer):
         # apply cos to odd index in the array
         cosines = tf.math.cos(angle_rads[:, 1::2])
 
+        # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
         pos_encoding = tf.concat([sines, cosines], axis=-1)
         pos_encoding = pos_encoding[tf.newaxis, ...]
         return tf.cast(pos_encoding, tf.float32)
 
-    def call(self, inputs):
+    def call(self, inputs):  # pylint: disable=arguments-differ
         return inputs + self.pos_encoding[:, : tf.shape(inputs)[1], :]

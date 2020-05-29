@@ -16,7 +16,7 @@ DATA_DIRNAME = Dataset.data_dirname() / "processed" / "emnist_lines"
 ESSENTIALS_FILENAME = Path(__file__).parents[0].resolve() / "emnist_lines_essentials.json"
 
 
-class EmnistLinesDataset(Dataset):
+class EmnistLinesDataset(Dataset):  # pylint: disable=too-many-instance-attributes
     """
     EmnistLinesDataset class.
 

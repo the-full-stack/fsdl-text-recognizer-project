@@ -11,7 +11,7 @@ from tensorflow.keras.utils import to_categorical
 
 from text_recognizer import util
 from text_recognizer.datasets.dataset import Dataset, _parse_args
-from text_recognizer.datasets.emnist_lines_dataset import EmnistLinesDataset
+from text_recognizer.datasets.emnist_lines_dataset import add_start_and_end_labels, EmnistLinesDataset
 
 
 PROCESSED_DATA_DIRNAME = Dataset.data_dirname() / "processed" / "iam_lines"
@@ -43,6 +43,9 @@ class IamLinesDataset(Dataset):
         self.with_start_and_end_labels = with_start_and_end_labels
         self.mapping = EmnistLinesDataset().mapping
         self.inverse_mapping = {v: k for k, v in self.mapping.items()}
+        self.padding_label = self.inverse_mapping["_"]
+        self.start_label = self.inverse_mapping["<s>"]
+        self.end_label = self.inverse_mapping["<e>"]
         self.num_classes = len(self.mapping)
         self.input_shape = (28, 952)
         self.output_shape = (97, self.num_classes)

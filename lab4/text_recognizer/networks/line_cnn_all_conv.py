@@ -81,7 +81,7 @@ def line_cnn_for_transformer(
 
     # Because of MaxPooling, everything is divided by 2
     new_height = image_height // 2
-    new_width = image_width // 2
+    # new_width = image_width // 2
     new_window_width = window_width // 2
     new_window_stride = window_stride // 2
 

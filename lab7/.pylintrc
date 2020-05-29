@@ -32,6 +32,7 @@ ignored-modules=cv2,numpy,tensorflow
 ignored-classes=cv2,numpy,tensorflow
 
 [BASIC]
+ignore-long-lines = ^\s*(# )?<?https?://\S+>?$
 
 # Good variable names which should always be accepted, separated by a comma
 good-names = _, e, f, fn, i, j, k, n, N, m, M, D, p, t, v, x, X, y, Y, w, h, W, H, x1, x2, y1, y2, ax, df

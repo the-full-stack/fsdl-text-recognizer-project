@@ -1,10 +1,12 @@
-# Code originally from https://colab.research.google.com/github/tensorflow/examples/blob/master/community/en/transformer_chatbot.ipynb
+"""MultiHeadAttention class and supporting functions."""
+# Code originally from https://colab.research.google.com/github/tensorflow/examples/blob/master
+#                      /community/en/transformer_chatbot.ipynb
 
 import tensorflow as tf
 
 
 def scaled_dot_product_attention(query, key, value, mask):
-    """Calculate the attention weights. """
+    """Calculate the attention weights."""
     matmul_qk = tf.matmul(query, key, transpose_b=True)
 
     # scale matmul_qk
@@ -45,7 +47,7 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         inputs = tf.reshape(inputs, shape=(batch_size, -1, self.num_heads, self.depth))
         return tf.transpose(inputs, perm=[0, 2, 1, 3])
 
-    def call(self, inputs):
+    def call(self, inputs):  # pylint: disable=arguments-differ
         query, key, value, mask = inputs["query"], inputs["key"], inputs["value"], inputs.get("mask", None)
         batch_size = tf.shape(query)[0]
 

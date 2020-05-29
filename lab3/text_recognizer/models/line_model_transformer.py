@@ -15,7 +15,7 @@ from text_recognizer.models.util import (
     sparse_categorical_crossentropy_ignoring_padding,
 )
 from text_recognizer.networks import line_cnn_for_transformer
-from text_recognizer.networks.transformer import run_transformer_inference
+from text_recognizer.networks.transformer.main import run_transformer_inference
 
 
 class LineModelTransformer(Model):
@@ -81,6 +81,8 @@ class LineModelTransformer(Model):
         """Predict on a single image."""
         if image.dtype == np.uint8:
             image = (image / 255).astype(np.float32)
-        pred = run_inference(self.model, image, self.data.max_length, self.data.start_label, self.data.end_label)
-        string = "".join([dataset.mapping[ind] for ind in pred.numpy()]).strip()
-        return pred, 1.0  # NOTE: conference is always given as 1.0 for now...
+        pred = run_transformer_inference(
+            self.network, image, self.data.max_length, self.data.start_label, self.data.end_label
+        )
+        string_ = "".join([self.data.mapping[ind] for ind in pred.numpy()]).strip()
+        return string_, 1.0  # NOTE: conference is always given as 1.0 for now...
