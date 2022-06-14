@@ -1,9 +1,7 @@
 # Python CircleCI 2.0 configuration file
 #
 # Check https://circleci.com/docs/2.0/language-python/ for more details
-#
-version: 2
-jobs:
+jobs:  # check end of file for def'n of workflow that combines these jobs
   build:
     docker:
       - image: circleci/python:3.7
@@ -13,56 +11,98 @@ jobs:
 
       - restore_cache:
           keys:
-          - cache-{{ checksum "requirements.txt" }}-{{ checksum "requirements-dev.txt" }}
+            - cache-v4-{{ checksum "requirements/prod.txt" }}-{{ checksum "requirements/dev.txt" }}-{{ checksum ".pre-commit-config.yaml" }}
 
       - run:
-          name: Install Git LFS
+          name: install development dependencies
           command: |
-            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-            sudo apt-get install git-lfs
-            git lfs install
+            pip install --quiet -r requirements/prod.txt -r requirements/dev.txt
 
       - run:
-          name: Pull LFS Files
-          command: git lfs pull
-
-      - run:
-          name: Install Shellcheck
+          name: install pre-commit hooks
           command: |
-            curl -OL https://storage.googleapis.com/shellcheck/shellcheck-stable.linux.x86_64.tar.xz
-            tar xf shellcheck-stable.linux.x86_64.tar.xz
-            sudo mv shellcheck-stable/shellcheck /usr/local/bin
-          working_directory: /tmp/shellcheck
-
-      - run:
-          name: install dependencies
-          command: |
-            sed -i 's/tensorflow==/tensorflow-cpu==/' requirements.txt
-            pip install -r requirements.txt
-            pip install -r requirements-dev.txt
+            pre-commit install --install-hooks
 
       - save_cache:
-          key: cache-{{ checksum "requirements.txt" }}-{{ checksum "requirements-dev.txt" }}
+          key: cache-v4-{{ checksum "requirements/prod.txt" }}-{{ checksum "requirements/dev.txt" }}-{{ checksum ".pre-commit-config.yaml" }}
+
           paths:
             - ~/.local
-
-      - run:
-          name: run linting
-          when: always
-          command: |
-            cd lab8 && PYTHONPATH=. ./tasks/lint.sh
-
-      - run:
-          name: run prediction tests
-          when: always
-          command: |
-            cd lab8 && PYTHONPATH=. pytest -s text_recognizer/tests/*
-
-      - run:
-          name: run evaluation tests
-          command: |
-            cd lab8 && PYTHONPATH=. pytest -s evaluation/*
+            - ~/.cache/pre-commit
 
       - store_artifacts:
           path: test-reports
           destination: test-reports
+
+  lint:
+    docker:
+      - image: circleci/python:3.7
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - cache-v4-{{ checksum "requirements/prod.txt" }}-{{ checksum "requirements/dev.txt" }}-{{ checksum ".pre-commit-config.yaml" }}
+
+      - run:
+          name: run pre-commit checks
+          command: |
+            pre-commit run --all-files
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+
+  unit_test:
+    docker:
+      - image: circleci/python:3.7
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - cache-v4-{{ checksum "requirements/prod.txt" }}-{{ checksum "requirements/dev.txt" }}-{{ checksum ".pre-commit-config.yaml" }}
+      - run:
+          name: run tests
+          command: |
+            cd lab8 || true; PYTHONPATH=. ./tasks/unit_test.sh
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+
+  integration_test:
+    docker:
+      - image: circleci/python:3.7
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - cache-v4-{{ checksum "requirements/prod.txt" }}-{{ checksum "requirements/dev.txt" }}-{{ checksum ".pre-commit-config.yaml" }}
+      - run:
+          name: run tests
+          command: |
+            cd lab8 || true; PYTHONPATH=. ./tasks/integration_test.sh
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+
+workflows:
+  version: 2
+  build_lint_test:
+    jobs:
+      - build
+      - lint:
+          requires:
+            - build
+      - unit_test:
+          requires:
+            - build
+      - integration_test:
+          requires:
+            - build

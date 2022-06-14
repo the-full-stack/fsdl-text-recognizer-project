@@ -1,0 +1,11 @@
+flask==2.1.1
+h5py
+importlib-metadata>=4.4
+numpy
+requests
+smart_open
+tqdm
+# versioned to match Google Colab up to minor
+pillow<7.2
+torch>=1.11,<1.12
+torchvision>=0.12

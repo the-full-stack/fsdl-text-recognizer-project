@@ -1,10 +1,8 @@
-name: fsdl-text-recognizer
+name: fsdl-text-recognizer-2022
 channels:
   - defaults
 dependencies:
-  - python=3.7
-  - cudatoolkit=10.1
-  - cudnn=7.6
-  - pip
-  - pip:
-    - pip-tools
+  - python=3.7  # versioned to match Google Colab  # version also pinned in Dockerfile
+  - cudatoolkit=11.3.1
+  - cudnn=8.2.1
+  - pip=21.1.3  # versioned to match Google Colab  # version also pinned in Dockerfile

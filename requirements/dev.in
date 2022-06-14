@@ -1,0 +1,20 @@
+-c prod.txt
+boltons
+coverage[toml]
+defusedxml
+itermplot
+jupyterlab
+matplotlib
+nltk
+pre-commit
+# versioned to improve stability
+pytorch-lightning==1.6.3
+pytest
+pytest-cov
+scipy
+toml
+tornado
+# versioned to improve stability
+torchmetrics<0.8
+# versioned to improve stability
+wandb==0.12.17

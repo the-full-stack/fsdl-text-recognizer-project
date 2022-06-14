@@ -1,11 +1,11 @@
 # Data
+data/downloaded
 data/processed
 data/interim
-data/raw/emnist/matlab*
-data/raw/fsdl_handwriting/pages
-data/raw/iam/iamdb
-data/raw/iam/iamdb.zip
-data/raw/nltk
+
+# Logs
+*/training/logs
+
 
 # Editors
 .vscode
@@ -37,12 +37,17 @@ var/
 *.egg
 
 # W&B
-wandb-debug.log
-wandb/*
-!wandb/settings
+wandb
 
 # Misc
 .DS_Store
 _labs
 logs
 .mypy_cache
+notebooks/lightning_logs
+lightning_logs/
+lab9/requirements.txt
+.coverage
+/requirements.txt
+*.pt
+*.ckpt
